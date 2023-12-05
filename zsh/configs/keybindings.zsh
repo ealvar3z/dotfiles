@@ -14,4 +14,6 @@ bindkey "^P" history-search-backward
 bindkey "^Y" accept-and-hold
 bindkey "^N" insert-last-word
 bindkey "^Q" push-line-or-edit
+bindkey "^H" backward-delete-char
+bindkey "^?" backward-delete-char
 bindkey -s "^T" "^[Isudo ^[A" # "t" for "toughguy"

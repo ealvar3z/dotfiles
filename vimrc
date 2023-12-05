@@ -1,6 +1,7 @@
 set encoding=utf-8
 
 inoremap jk <Esc>
+map ; :
 
 " Leader
 let mapleader = " "
