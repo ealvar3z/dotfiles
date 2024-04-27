@@ -8,6 +8,9 @@ alias e="$EDITOR"
 alias v="$VISUAL"
 alias x="exit"
 
+# llm manpages
+alias ?="llm"
+
 # Bundler
 alias b="bundle"
 
