@@ -1,7 +1,2 @@
-#!/bin/sh
-
-local_hook="$HOME"/.git_template.local/hooks/commit-msg
-
-if [ -f "$local_hook" ]; then
-  . "$local_hook"
-fi
+#!/usr/bin/env sh
+/home/eax/.config/emacs/bin/doom --no-color ci hook commit-msg "$@"
