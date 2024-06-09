@@ -41,3 +41,9 @@ _load_settings "$HOME/.zsh/configs"
 [[ -f ~/.aliases ]] && source ~/.aliases
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+# Created by `pipx` on 2024-06-08 01:12:55
+export PATH="$PATH:/home/eax/.local/bin"
+
+# opam configuration
+[[ ! -r /home/eax/.opam/opam-init/init.zsh ]] || source /home/eax/.opam/opam-init/init.zsh  > /dev/null 2> /dev/null

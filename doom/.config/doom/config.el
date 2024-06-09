@@ -14,15 +14,15 @@
 ;; - `doom-font' -- the primary font to use
 ;; - `doom-variable-pitch-font' -- a non-monospace font (where applicable)
 ;; - `doom-big-font' -- used for `doom-big-font-mode'; use this for
-;;   presentations or streaming.
+;;   presentations or [[id:5ea228c6-70ac-4c0a-af59-e92b04d78251][Scientific Computing]]streaming.
 ;; - `doom-symbol-font' -- for symbols
 ;; - `doom-serif-font' -- for the `fixed-pitch-serif' face
 ;;
 ;; See 'C-h v doom-font' for documentation and more examples of what they
 ;; accept. For example:
 ;;
-(setq doom-font (font-spec :family "Fira Code" :size 17 :weight 'semi-light)
-     doom-variable-pitch-font (font-spec :family "Fira Sans" :size 19))
+(setq doom-font (font-spec :family "JetBrains Mono" :size 17 :weight 'semi-light)
+     doom-variable-pitch-font (font-spec :family "JetBrains Mono" :size 19))
 ;;
 ;; If you or Emacs can't find your font, use 'M-x describe-font' to look them
 ;; up, `M-x eval-region' to execute elisp code, and 'M-x doom/reload-font' to
@@ -42,6 +42,13 @@
 ;; If you use `org' and don't want your org files in the default location below,
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/Dropbox/org/")
+(setq eBooks "eBooks/")
+(setq Papers "Papers/")
+(setq bib-file (concat org-directory "references.bib"))
+(setq bib-library (list (concat org-directory "eBooks/") (concat org-directory "Papers/")))
+(setq! citar-bibliography bib-file)
+(setq! citar-library-paths bib-library)
+(setq! citar-notes-paths org-roam-directory)
 
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an
