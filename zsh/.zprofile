@@ -6,9 +6,7 @@ elif [ -d "/home/linuxbrew" ]; then
   eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 fi
 
-if [ -d "$HOME/.local/bin/mise" ]; then
-  eval "$(~/.local/bin/mise activate zsh)"
-fi
+eval "$(/usr/bin/mise activate zsh)"
 
 # Created by `pipx` on 2024-06-08 01:12:55
 export PATH="$PATH:/home/eax/.local/bin"
