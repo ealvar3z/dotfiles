@@ -3,8 +3,15 @@
 # cac_setup.sh
 # Description: Setup a Linux environment for Common Access Card use.
 
-main ()
-{
+download_certs () {
+    local url=$1
+    local filename=$2
+
+    wget -O "$DWNLD_DIR/$filename" "$url"
+    return $?
+}
+
+main () {
     EXIT_SUCCESS=0                      # Success exit code
     E_INSTALL=85                        # Installation failed
     E_NOTROOT=86                        # Non-root exit error
@@ -17,7 +24,7 @@ main ()
     ff_exists=false                     # Firefox is installed
     snap_ff=false                       # Flag to prompt for how to handle snap Firefox
 
-    ORIG_HOME="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
+    ORIG_HOME="$(getent passwd "$USER" | cut -d: -f6)"
     CERT_EXTENSION="cer"
     PKCS_FILENAME="pkcs11.txt"
     DB_FILENAME="cert9.db"
@@ -47,14 +54,6 @@ main ()
 
             exit "$E_DATABASE"
         fi
-    else
-        # Database was found. (Good)
-        if [ "$snap_ff" == true ]
-        then
-            # Database was found, meaning snap firefox was replaced with apt version
-            # This conditional branch may not be needed at all... Note: Remove if not needed
-            snap_ff=false
-        fi
     fi
 
     # Install middleware and necessary utilities
@@ -63,13 +62,30 @@ main ()
     DEBIAN_FRONTEND=noninteractive apt install -y libpcsclite1 pcscd libccid libpcsc-perl pcsc-tools libnss3-tools unzip wget
     print_info "Done"
 
-    # Pull all necessary files
-    print_info "Downloading DoD certificates and Cackey package..."
-    wget -qP "$DWNLD_DIR" "$CERT_URL"
-    wget -qP "$DWNLD_DIR" "$CACKEY_URL"
-    print_info "Done."
+    # Attempt to download from dod.cyber.mil
+   download_certs  "$CERT_URL" "$BUNDLE_FILENAME"
+    if [ $? -ne 0 ]; then
+        # dod.cyber.mil link failed
+        print_info "DoD cyber.mil link failes, attempting alternate militarycac.com link"
+        download_certs "$ALT_CERT_URL" "$ALT_BUNDLE_FILENAME"
+        if [ $? -ne 0 ]; then
+            # both failed
+            print_err "Both links are kaputz"
+            exit $E_INSTALL
+        else
+            # militarycac.com link is good to bueno
+            CERT_FILENAME="$ALT_BUNDLE_FILENAME"
+            print_info "militarycac.com alternate bundle succesfully downloaded"
+        fi
+    else
+        print_info "Downloading DoD certificates was succesful..."
+        print_info "Done."
+    fi
 
     # Install libcackey.
+    print_info "Downloading cackey..."
+    wget -O "$DWNLD_DIR" "$CACKEY_URL"
+    print_info "Done."
     if [ -e "$DWNLD_DIR/$PKG_FILENAME" ]
     then
         print_info "Installing libcackey..."
