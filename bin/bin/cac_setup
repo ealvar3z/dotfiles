@@ -24,7 +24,7 @@ main () {
     ff_exists=false                     # Firefox is installed
     snap_ff=false                       # Flag to prompt for how to handle snap Firefox
 
-    ORIG_HOME="$(getent passwd "$USER" | cut -d: -f6)"
+    ORIG_HOME="$(getent passwd "$SUDO_USER" | cut -d: -f6)"
     CERT_EXTENSION="cer"
     PKCS_FILENAME="pkcs11.txt"
     DB_FILENAME="cert9.db"
