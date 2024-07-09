@@ -8,6 +8,16 @@ alias e="$EDITOR"
 alias v="$VISUAL"
 alias x="exit"
 
+# Git
+alias ga='git add'
+alias gb='git branch'
+alias gc='git commit'
+alias gco='git checkout'
+alias gl='git log --oneline --grpah --decorate'
+alias gp='git push'
+alias gs='git diff'
+alias gs='git status'
+
 # llm manpages
 alias ?="llm"
 
