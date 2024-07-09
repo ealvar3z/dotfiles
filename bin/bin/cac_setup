@@ -39,7 +39,7 @@ main () {
     root_check
     browser_check
 
-    mapfile -t databases < <(find "$ORIG_HOME" -name "$DB_FILENAME" 2>/dev/null | grep "firefox\|pki" | grep -v "Trash\|snap")
+    mapfile -t databases < <(find "$ORIG_HOME" -name "$DB_FILENAME" 2>/dev/null | grep "firefox\|pki")
     # Check if databases were found properly
     if [ "${#databases[@]}" -eq 0 ]
     then
