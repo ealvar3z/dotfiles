@@ -17,7 +17,7 @@ class Pkcs11Object(object):
 
     def get_str(self, exclude_attrs=()):
         s = '{0} {1}:\n'.format(self.typename, self.id)
-        for k,v in self.attrs.iteritems():
+        for k,v in self.attrs.items():
             if k in exclude_attrs: continue
             if not v: continue
             s += '  {0}: {1}\n'.format(k, v)
