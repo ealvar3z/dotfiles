@@ -1,9 +1,8 @@
 set encoding=utf-8
 
-" Leader
 let mapleader = " "
-inoremap jk <Esc>
 map ; :
+inoremap jk <Esc>
 
 " Load matchit.vim, but only if the user hasn't installed a newer version.
 if !exists('g:loaded_matchit') && findfile('plugin/matchit.vim', &rtp) ==# ''
@@ -100,11 +99,14 @@ nnoremap <C-l> <C-w>l
 
 " Set spellfile to location that is guaranteed to exist, can be symlinked to
 " Dropbox or kept in Git
-set spellfile=$HOME/Dropbox/.vim-spell-en.utf-8.add
+" set spellfile=$HOME/Dropbox/.vim-spell-en.utf-8.add
 
 " Autocomplete with dictionary words when spell check is on
-set complete+=ispell
+" set complete+=ispell
 
 " Always use vertical diffs
 set diffopt+=vertical
 
+if filereadable(expand("~/.vimrc.bundles"))
+  source ~/.vimrc.bundles
+endif

@@ -31,6 +31,7 @@ alias s="rspec"
 alias path='echo ${PATH//:/\\n}'
 
 # Easier navigation: ..., ....
+alias ..="cd ../"
 alias ...="cd ../.."
 alias ....="cd ../../.."
 
