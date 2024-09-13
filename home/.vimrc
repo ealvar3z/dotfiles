@@ -1,5 +1,7 @@
 set encoding=utf-8
 
+colorscheme acme
+
 let mapleader = " "
 map ; :
 inoremap jk <Esc>
@@ -99,10 +101,9 @@ nnoremap <C-l> <C-w>l
 
 " Set spellfile to location that is guaranteed to exist, can be symlinked to
 " Dropbox or kept in Git
-" set spellfile=$HOME/Dropbox/.vim-spell-en.utf-8.add
+" set spellfile=$HOME/.vim/.vim-spell-en.utf-8.add
 
-" Autocomplete with dictionary words when spell check is on
-" set complete+=ispell
+let g:netrw_dirhist = '/tmp/'
 
 " Always use vertical diffs
 set diffopt+=vertical

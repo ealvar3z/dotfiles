@@ -36,15 +36,6 @@ export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
 export CFLAGS="-Wall -Wextra -Werror -O0 -g -fsanitize=address -fno-omit-frame-pointer -finstrument-functions"
 
-export LESS="-FXR"
-export LESS_TERMCAP_mb="␛[35m" # magenta
-export LESS_TERMCAP_md="␛[33m" # yellow
-export LESS_TERMCAP_me=""      # "␛0m"
-export LESS_TERMCAP_se=""      # "␛0m"
-export LESS_TERMCAP_so="␛[34m" # blue
-export LESS_TERMCAP_ue=""      # "␛0m"
-export LESS_TERMCAP_us="␛[4m"  # underline
-
 [[ -d /.vim/spell ]] && export VIMSPELL=("$HOME/.vim/spell/*.add")
 
 # ----------------------------- PostgreSQL ----------------------------
@@ -58,10 +49,23 @@ export GPG_TTY
 
 # ------------------------------- pager ------------------------------
 
-if [[ -x /usr/bin/lesspipe ]]; then
-	export LESSOPEN="| /usr/bin/lesspipe %s"
-	export LESSCLOSE="/usr/bin/lesspipe %s %s"
-fi
+# Set LESS options
+export LESS="-FXR"
+
+# Define ANSI escape sequences for colors and text attributes
+export LESS_TERMCAP_mb=$'\e[35m' # Magenta for blinking text
+export LESS_TERMCAP_md=$'\e[33m' # Yellow for bold text
+export LESS_TERMCAP_me=$'\e[0m'  # Reset all attributes
+export LESS_TERMCAP_se=$'\e[0m'  # Reset standout-mode
+export LESS_TERMCAP_so=$'\e[34m' # Blue for standout-mode text
+export LESS_TERMCAP_ue=$'\e[0m'  # Reset underline
+export LESS_TERMCAP_us=$'\e[4m'  # Underline
+
+# Set MANPAGER to use less with -R flag
+export MANPAGER="less -R"
+
+# Optionally, set PAGER for other applications
+export PAGER="less -R"
 
 # ----------------------------- dircolors ----------------------------
 
@@ -257,15 +261,18 @@ _have podman && _source_if "$HOME/.local/share/podman/completion" # d
 _have docker && _source_if "$HOME/.local/share/docker/completion" # d
 _have docker-compose && complete -F _docker_compose dc            # dc
 
-_have ansible && . <(register-python-argcomplete3 ansible)
-_have ansible-config && . <(register-python-argcomplete3 ansible-config)
-_have ansible-console && . <(register-python-argcomplete3 ansible-console)
-_have ansible-doc && . <(register-python-argcomplete3 ansible-doc)
-_have ansible-galaxy && . <(register-python-argcomplete3 ansible-galaxy)
-_have ansible-inventory && . <(register-python-argcomplete3 ansible-inventory)
-_have ansible-playbook && . <(register-python-argcomplete3 ansible-playbook)
-_have ansible-pull && . <(register-python-argcomplete3 ansible-pull)
-_have ansible-vault && . <(register-python-argcomplete3 ansible-vault)
+_have ansible && . <(register-python-argcomplete ansible)
+_have ansible-config && . <(register-python-argcomplete ansible-config)
+_have ansible-console && . <(register-python-argcomplete ansible-console)
+_have ansible-doc && . <(register-python-argcomplete ansible-doc)
+_have ansible-galaxy && . <(register-python-argcomplete ansible-galaxy)
+_have ansible-inventory && . <(register-python-argcomplete ansible-inventory)
+_have ansible-playbook && . <(register-python-argcomplete ansible-playbook)
+_have ansible-pull && . <(register-python-argcomplete ansible-pull)
+_have ansible-vault && . <(register-python-argcomplete ansible-vault)
+
+_have pipx && . <(register-python-argcomplete pipx)
+_have yt-dlp && . <(register-python-argcomplete yt-dlp)
 #_have ssh-agent && test -z "$SSH_AGENT_PID" && . <(ssh-agent)
 
 # -------------------- personalized configuration --------------------
