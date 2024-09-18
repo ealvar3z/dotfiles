@@ -108,6 +108,7 @@ pathprepend() {
 pathprepend \
 	"$HOME/bin" \
 	"$HOME/.local/bin" \
+	"$HOME/.config/emacs/bin" \
 	/usr/local/go/bin \
 	/usr/local/bin
 
