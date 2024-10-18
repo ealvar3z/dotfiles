@@ -9,8 +9,23 @@ esac
 # ------------------------- distro detection -------------------------
 
 export DISTRO
-[[ $(uname -r) =~ Microsoft ]] && DISTRO=WSL2 #TODO distinguish WSL1
-#TODO add the rest
+if [[ $(uname -r) =~ Microsoft ]]; then
+    if grep -q "Microsoft" /proc/version && ! grep -q "WSL2" /proc/version; then
+        DISTRO="WSL1"
+    else
+        DISTRO="WSL2"
+    fi
+elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    DISTRO="Linux"
+elif [[ "$OSTYPE" == "darwin"* ]]; then
+    DISTRO="macOS"
+elif [[ "$OSTYPE" == "freebsd"* ]]; then
+    DISTRO="FreeBSD"
+elif [[ "$OSTYPE" == "openbsd"* ]]; then
+    DISTRO="OpenBSD"
+else
+    DISTRO="Unknown"
+fi
 
 # ---------------------- local utility functions ---------------------
 
@@ -109,6 +124,7 @@ pathprepend \
 	"$HOME/bin" \
 	"$HOME/.local/bin" \
 	"$HOME/.config/emacs/bin" \
+	"$GOBIN" \
 	/usr/local/go/bin \
 	/usr/local/bin
 
@@ -285,12 +301,5 @@ _source_if "$HOME/.aliases"
 
 _have terraform && complete -C /usr/bin/terraform terraform
 _have terraform && complete -C /usr/bin/terraform tf
-
-# ------------------------- NVM bullshit ahead ------------------------
-# (keep as is or nvm idiotic installer will re-add to bashrc next time)
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
