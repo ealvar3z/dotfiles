@@ -180,11 +180,16 @@ PROMPT_AT=@
 
 __ps1() {
 	local P='$' dir="${PWD##*/}" B countme short long double \
-		r='\[\e[31m\]' g='\[\e[30m\]' h='\[\e[34m\]' \
-		u='\[\e[33m\]' p='\[\e[34m\]' w='\[\e[35m\]' \
-		b='\[\e[36m\]' x='\[\e[0m\]'
+		r='\[\e[31m\]'  \
+		u='\[\e[33m\]'  \
+		b='\[\e[36m\]'  \
+    x='\[\e[0m\]'   \
+    h='\[\e[34m\]'  \
+    p='\[\e[34m\]'
+    # w='\[\e[35m\]'
+    # g='\[\e[30m\]'
 
-	[[ $EUID == 0 ]] && P='#' && u=$r && p=$u # root
+  [[ $EUID == 0 ]] && P='#' && u=$r && p=$u # root
 	[[ $PWD = / ]] && dir=/
 	[[ $PWD = "$HOME" ]] && dir='~'
 
@@ -193,11 +198,11 @@ __ps1() {
 	countme="$USER$PROMPT_AT$(hostname):$dir($B)\$ "
 
 	[[ $B == master || $B == main ]] && b="$r"
-	[[ -n "$B" ]] && B="$g($b$B$g)"
+	[[ -n "$B" ]] && B="$u($b$B$u)"
 
-	short="$u\u$g$PROMPT_AT$h\h$g:$w$dir$B$p$P$x "
-	long="$g╔ $u\u$g$PROMPT_AT$h\h$g:$w$dir$B\n$g╚ $p$P$x "
-	double="$g╔ $u\u$g$PROMPT_AT$h\h$g:$w$dir\n$g║ $B\n$g╚ $p$P$x "
+	short="$u\u$u$PROMPT_AT$u\h$u:$r$dir$B$p$P$x "
+	long="$u╔ $u\u$u$PROMPT_AT$u\h$u:$r$dir$B\n$u╚ $p$P$x "
+	double="$u╔ $u\u$h$PROMPT_AT$h\h$u:$r$dir\n$u║ $B\n$u╚ $p$P$x "
 
 	if ((${#countme} > PROMPT_MAX)); then
 		PS1="$double"
