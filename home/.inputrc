@@ -1,11 +1,15 @@
 # edit ~/.inputrc
 
-# want vi to be the default editor for readline                      
+# Make autocompletion case insensitive and display suggestions after single tab.
+# https://bugs.debian.org/990353
+set completion-ignore-case On
+set show-all-if-ambiguous On
+# want vi to be the default editor for readline
 set editing-mode vi
 
-# vi settings                                         
+# vi settings
 $if mode=vi
-    # insert mode             
+    # insert mode
     set keymap vi-insert
     "jk": vi-movement-mode # remap escape
 $endif

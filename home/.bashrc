@@ -46,7 +46,7 @@ export VISUAL=vim
 export EDITOR_PREFIX=vim
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
-export GOBIN="$GOPATH/bin"
+export GOBIN="$HOME/go/bin"
 export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
 export CFLAGS="-Wall -Wextra -Werror -O0 -g -fsanitize=address -fno-omit-frame-pointer -finstrument-functions"
@@ -123,15 +123,11 @@ pathprepend() {
 pathprepend \
 	"$HOME/bin" \
 	"$HOME/.local/bin" \
-	"$HOME/.config/emacs/bin" \
-	"$GOBIN" \
+	"$HOME/go/bin" \
 	/usr/local/go/bin \
 	/usr/local/bin
 
 pathappend \
-	'/mnt/c/Windows' \
-	'/mnt/c/Program Files (x86)/VMware/VMware Workstation' \
-	/mingw64/bin \
 	/usr/local/bin \
 	/usr/local/sbin \
 	/usr/local/games \
@@ -267,9 +263,6 @@ fi
 # for i in "${owncomp[@]}"; do complete -C "$i" "$i"; done
 
 _have gh && . <(gh completion -s bash)
-_have z && . <(z completion bash)
-_have glow && . <(glow completion  bash)
-_have goreleaser && . <(goreleaser completion bash 2>/dev/null)
 _have pandoc && . <(pandoc --bash-completion)
 _have kubectl && . <(kubectl completion bash 2>/dev/null)
 _have k && complete -o default -F __start_kubectl k
@@ -295,7 +288,6 @@ _have ansible-vault && . <(register-python-argcomplete ansible-vault)
 
 _have pipx && . <(register-python-argcomplete pipx)
 _have yt-dlp && . <(register-python-argcomplete yt-dlp)
-#_have ssh-agent && test -z "$SSH_AGENT_PID" && . <(ssh-agent)
 
 # -------------------- personalized configuration --------------------
 
