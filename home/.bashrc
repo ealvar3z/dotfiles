@@ -257,38 +257,16 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
 	[[ -r "$brew_prefix/etc/profile.d/bash_completion.sh" ]] && . "$brew_prefix/etc/profile.d/bash_completion.sh"
 fi
 
-# owncomp=(
-# )
-
-# for i in "${owncomp[@]}"; do complete -C "$i" "$i"; done
-
-_have gh && . <(gh completion -s bash)
-_have pandoc && . <(pandoc --bash-completion)
-_have kubectl && . <(kubectl completion bash 2>/dev/null)
-_have k && complete -o default -F __start_kubectl k
-_have kind && . <(kind completion bash)
-_have cobra && . <(cobra completion bash)
-_have kompose && . <(kompose completion bash)
-_have helm && . <(helm completion bash)
-_have minikube && . <(minikube completion bash)
-_have mk && complete -o default -F __start_minikube mk
-_have podman && _source_if "$HOME/.local/share/podman/completion" # d
-_have docker && _source_if "$HOME/.local/share/docker/completion" # d
-_have docker-compose && complete -F _docker_compose dc            # dc
-
-_have ansible && . <(register-python-argcomplete ansible)
-_have ansible-config && . <(register-python-argcomplete ansible-config)
-_have ansible-console && . <(register-python-argcomplete ansible-console)
-_have ansible-doc && . <(register-python-argcomplete ansible-doc)
-_have ansible-galaxy && . <(register-python-argcomplete ansible-galaxy)
-_have ansible-inventory && . <(register-python-argcomplete ansible-inventory)
-_have ansible-playbook && . <(register-python-argcomplete ansible-playbook)
-_have ansible-pull && . <(register-python-argcomplete ansible-pull)
-_have ansible-vault && . <(register-python-argcomplete ansible-vault)
-
-_have pipx && . <(register-python-argcomplete pipx)
-_have yt-dlp && . <(register-python-argcomplete yt-dlp)
-
+# enable programmable completion features (you don't need to enable
+# this, if it's already enabled in /etc/bash.bashrc and /etc/profile
+# sources /etc/bash.bashrc).
+if ! shopt -oq posix; then
+  if [ -f /usr/share/bash-completion/bash_completion ]; then
+    . /usr/share/bash-completion/bash_completion
+  elif [ -f /etc/bash_completion ]; then
+    . /etc/bash_completion
+  fi
+fi
 # -------------------- personalized configuration --------------------
 
 _source_if "$HOME/.bash_personal"
@@ -296,7 +274,5 @@ _source_if "$HOME/.bash_private"
 _source_if "$HOME/.bash_work"
 _source_if "$HOME/.aliases"
 
-_have terraform && complete -C /usr/bin/terraform terraform
-_have terraform && complete -C /usr/bin/terraform tf
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
