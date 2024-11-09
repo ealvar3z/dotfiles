@@ -5,6 +5,10 @@
 .byebug_history
 .env
 .git/
+w3m/.w3m/w3mcache*
+w3m/.w3m/w3msrc*
+w3m/.w3m/w3mtmp*
+w3m/.w3m/history
 /bower_components/
 /log
 /node_modules/

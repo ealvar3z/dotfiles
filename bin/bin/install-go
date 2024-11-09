@@ -45,7 +45,7 @@ install_latest_go() {
 	mkdir -p "$dir" 2>/dev/null
 	path="$(fetch)"
 	[[ -z "$path" ]] && echo "unable to fetch go tarball" 1>&2 && return 1
-	rm -rf "$dir/go" && tar -C "$dir" -xzf "$path" # rm is required by instructions
+	rm -rf "$dir/go" && /usr/bin/tar -C "$dir" -xzf "$path" # rm is required by instructions
 	echo "Add $dir/go/bin to your path and optionally set GOBIN=~/.local/bin" 1>&2
 }
 

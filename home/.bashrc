@@ -46,7 +46,8 @@ export VISUAL=vim
 export EDITOR_PREFIX=vim
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
-export GOBIN="$HOME/go/bin"
+export GOBIN="$HOME/.local/bin"
+# export PLAN9="/usr/local/plan9/plan9port"
 export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
 export CFLAGS="-Wall -Wextra -Werror -O0 -g -fsanitize=address -fno-omit-frame-pointer -finstrument-functions"
@@ -120,10 +121,10 @@ pathprepend() {
 } && export -f pathprepend
 
 # remember last arg will be first in path
+# "$PLAN9/bin" \
 pathprepend \
 	"$HOME/bin" \
-	"$HOME/.local/bin" \
-	"$HOME/go/bin" \
+	"$HOME/.local/go/bin" \
 	/usr/local/go/bin \
 	/usr/local/bin
 

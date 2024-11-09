@@ -30,16 +30,16 @@ augroup vimrcEx
     \ endif
 
   " Set syntax highlighting for specific file types
-  autocmd BufRead,BufNewFile *.md set filetype=markdown
-  autocmd BufRead,BufNewFile .{jscs,jshint,eslint}rc set filetype=json
-  autocmd BufRead,BufNewFile
-    \ aliases.local,
-    \zshenv.local,zlogin.local,zlogout.local,zshrc.local,zprofile.local,
-    \*/zsh/configs/*
-    \ set filetype=sh
-  autocmd BufRead,BufNewFile gitconfig.local set filetype=gitconfig
-  autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
-  autocmd BufRead,BufNewFile vimrc.local set filetype=vim
+  " autocmd BufRead,BufNewFile *.md set filetype=markdown
+  " autocmd BufRead,BufNewFile .{jscs,jshint,eslint}rc set filetype=json
+  " autocmd BufRead,BufNewFile
+  "   \ aliases.local,
+  "   \zshenv.local,zlogin.local,zlogout.local,zshrc.local,zprofile.local,
+  "   \*/zsh/configs/*
+  "   \ set filetype=sh
+  " autocmd BufRead,BufNewFile gitconfig.local set filetype=gitconfig
+  " autocmd BufRead,BufNewFile tmux.conf.local set filetype=tmux
+  " autocmd BufRead,BufNewFile vimrc.local set filetype=vim
 augroup END
 
 " When the type of shell script is /bin/sh, assume a POSIX-compatible
@@ -53,7 +53,9 @@ set shiftround
 set expandtab
 
 " Display extra whitespace
-set list listchars=tab:»·,trail:·,nbsp:·
+" set list listchars=tab:»·,trail:·,nbsp:·
+syntax off
+set clipboard^=unnamed,unnamedplus
 
 " Use one space, not two, after punctuation.
 set nojoinspaces
