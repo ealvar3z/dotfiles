@@ -1,100 +1,66 @@
 #!/bin/bash
 
-# Color Picker 
-if [ -t 1 ]; then
-    COLOR_RED="\033[31m"
-    COLOR_OFF="\033[0m"
+# Ensure script is run as root
+if [ "$EUID" -ne 0 ]; then
+  echo "Please run as root"
+  exit 1
 fi
 
-error() {
-    local message="$1"
-    local exitcode="${2:-2}" # default exit code is 2
-    echo -e "${COLOR_RED}Error: ${message}${COLOR_OFF}"
-    exit $exitcode
-}
+# Update package list
+echo "Updating package list..."
+apt update
 
-detect_os() {
-    echo -e "\n[Detecting operating system...]"
-    if grep -qi "ubuntu" /etc/os-release; then
-        echo "Ubuntu detected"
-        pkg_manager="apt"
-        opensc_module="/usr/lib/x86_64-linux-gnu/opensc-pkcs11.so"
-        pkg_list="pcsc-tools pcscd libnss3-tools p11-kit opensc openconnect"
-    elif grep -qi "fedora" /etc/os-release || grep -qi "rhel" /etc/os-release; then
-        echo "Fedora/RHEL detected"
-        pkg_manager="dnf"
-        opensc_module="/usr/lib64/pkcs11/opensc-pkcs11.so"
-        pkg_list="pcsc-lite pcsc-perl pcsc-tools nss-tools p11-kit opensc openconnect"
-    else
-        error "Unsupported operating system"
-    fi
-}
+# Install dependencies for CAC reader
+echo "Installing necessary libraries for CAC reader..."
+apt install -y pcscd pcsc-tools libpcsclite1 libccid opensc
 
-install_packages() {
-    echo -e "\n[Installing packages...]"
-    if [ "$pkg_manager" == "apt" ]; then
-        apt install -y $pkg_list || error "Failed to install packages via apt"
-    elif [ "$pkg_manager" == "dnf" ]; then
-        dnf install -y $pkg_list || error "Failed to install packages via dnf"
-    fi
-    echo "Packages installation completed."
-}
+# Enable and start pcscd service
+echo "Enabling and starting pcscd service..."
+systemctl enable pcscd
+systemctl start pcscd
 
-enable_and_start_service() {
-    local service="$1"
-    echo -e "\n[Enabling and starting $service service...]"
-    systemctl enable "$service" || error "Failed to enable $service"
-    systemctl start "$service" || error "Failed to start $service"
-    echo "$service service is enabled and started."
-}
+# Verify CAC reader is detected
+echo "Verifying CAC reader is detected..."
+pcsc_scan
 
-check_file_exists() {
-    local file="$1"
-    local error_msg="$2"
-    if [ ! -f "$file" ]; then
-        error "$error_msg"
-    fi
-}
+# Install Google Chrome
+echo "Installing Google Chrome..."
+wget -q -O - https://dl.google.com/linux/linux_signing_key.pub | apt-key add -
+sh -c 'echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" > /etc/apt/sources.list.d/google-chrome.list'
+apt update && apt install -y google-chrome-stable
 
-configure_opensc_module() {
-    local opensc_p11mod="/etc/pkcs11/modules/opensc.module"
-    
-    echo -e "\n[Configuring OpenSC PKCS#11 module...]"
-    check_file_exists "$opensc_module" "The OpenSC PKCS#11 module is missing at $opensc_module. Check your system."
-    
-    if [ -f "$opensc_p11mod" ]; then
-        error "$opensc_p11mod already exists. Please remove it and try again."
-    fi
+# Download DoD Root Certificates
+echo "Downloading DoD Root Certificates..."
+DOD_CERTS_URL="https://dl.dod.cyber.mil/wp-content/uploads/pki-pke/zip/unclass-certificates_pkcs7_DoD.zip"
+CERTS_DIR="/usr/local/share/ca-certificates/dod_certs"
 
-    echo "module:$opensc_module" > "$opensc_p11mod" || error "Failed to configure OpenSC PKCS#11 module"
-    echo "OpenSC PKCS#11 module configuration completed."
-}
+mkdir -p $CERTS_DIR
+wget -O /tmp/dod_certs.zip $DOD_CERTS_URL
+unzip /tmp/dod_certs.zip -d $CERTS_DIR
 
-configure_chrome_cac_module() {
-    echo -e "\n[Configuring Chrome for CAC module...]"
-    modutil -dbdir sql:.pki/nssdb/ -add "CAC Module" -libfile "$opensc_module" || error "Failed to add CAC Module"
+# Convert PKCS7 certificates to individual PEM files
+echo "Converting DoD certificates to PEM format..."
+for cert in $CERTS_DIR/*.p7b; do
+  openssl pkcs7 -print_certs -in "$cert" -out "${cert%.p7b}.pem"
+done
 
-    echo -e "\n[Verifying if CAC Module is loaded...]"
-    modutil -dbdir sql:.pki/nssdb/ -list | grep -q "CAC" || error "CAC Module not found"
-    echo "CAC Module successfully loaded."
-}
+# Remove old files
+rm $CERTS_DIR/*.p7b
 
-main() {
-    if [ "$(id -u)" != "0" ]; then
-        error "Must be run as root" 1
-    fi
+# Install the DoD certificates into the system's trusted certificates
+echo "Installing DoD certificates to trusted store..."
+find $CERTS_DIR -name "*.pem" -exec cp {} /usr/local/share/ca-certificates/ \;
+update-ca-certificates
 
-    detect_os
-    install_packages
-    enable_and_start_service "pcscd"
-    configure_opensc_module
+# Configuring Chrome to use CAC reader
+echo "Configuring Chrome to use the CAC reader..."
 
-    pushd "$HOME" || error "Failed to navigate to home directory"
-    configure_chrome_cac_module
-    popd || error "Failed to return to previous directory"
+# Instructions for users to load certificates
+echo "Setup complete. Please follow these steps to finish setup:"
+echo "1. Open Google Chrome."
+echo "2. Go to chrome://settings/certificates."
+echo "3. Under 'Authorities,' select 'Import' and import each certificate file from /usr/local/share/ca-certificates/dod_certs."
+echo "4. After importing, restart Chrome."
 
-    echo "[DONE]."
-}
-
-main
+echo "You should now have access to DoD sites with your CAC reader. Please test access and contact support if needed."
 

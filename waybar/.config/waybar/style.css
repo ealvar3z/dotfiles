@@ -1,0 +1,54 @@
+/* Waybar minimal configuration - no colors, minimal size */
+
+* {
+    color: inherit;
+    border: 1px solid transparent;
+    border-radius: 1px;
+    padding: 0;
+    font-family: JetBrainsMono, SymbolsNerdFont;
+    font-size: 11px;
+    margin: 1px;
+}
+
+window#waybar {
+    background: transparent;
+    background-color: rgba(0, 0, 0, 0); /* Transparent background */
+}
+
+#workspaces button {
+    padding: 1px 2px;
+    border: 1px solid transparent;
+    margin: 0;
+}
+
+#workspaces button.focused {
+    border-color: inherit;
+}
+
+#mode,
+#custom-launcher,
+#window,
+#network,
+#custom-updates,
+#custom-keyboard-layout,
+#cpu,
+#temperature,
+#memory,
+#idle_inhibitor,
+#backlight,
+#pulseaudio,
+#battery,
+#clock,
+#tray,
+#custom-power {
+    padding: 1px 2px;
+    border: 1px solid transparent;
+    margin: 0;
+    border-radius: 1px;
+}
+
+/* Remove animations and any unnecessary styling */
+@keyframes blink { /* Removed blink color changes */ }
+#battery.critical:not(.charging) {
+    animation-name: none;
+}
