@@ -1,0 +1,32 @@
+# Change the default escape sequence from C-a to C-b
+escape ^Bb
+
+# Enable mouse support for easier copy and paste
+mousetrack on
+
+# Increase the scrollback buffer size
+defscrollback 10000
+
+# Enable UTF-8 support
+defutf8 on
+utf8 on
+
+# Enable visual bell
+vbell off
+
+# Copy and paste with system clipboard
+# Use xclip for clipboard integration (Linux) or pbcopy/pbpaste (macOS)
+# Bind keys for copying text to clipboard
+bind -c copy_mode y eval "copy" "exec sh -c 'xclip -i -selection clipboard </tmp/screen-exchange'"  # Linux
+# Uncomment the next line for macOS:
+# bind -c copy_mode y eval "copy" "exec sh -c 'cat /tmp/screen-exchange | pbcopy'"
+
+# Customizable status bar
+hardstatus alwayslastline
+hardstatus string "%{= kw}%-w%{= bw}%n %t%{-}%+w %=%{= kG} %Y-%m-%d %c"
+
+# Miscellaneous settings
+startup_message off
+autodetach on
+shelltitle "$ |bash"
+
