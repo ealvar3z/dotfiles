@@ -1,0 +1,27 @@
+[[language]]
+name = "bash"
+language-id = "shellscript"
+file-types = ["sh", "bash", "rc"]
+comment-tokens = "#"
+
+[language-server.html]
+command = "vscode-html-language-server"
+args = ["--stdio"]
+
+[language-server.css] 
+command = "vscode-css-language-server"
+args = ["--stdio"] 
+
+[language-server.bash] 
+command = "bash-language-server"
+args = ["start"] 
+
+[language-server.go]
+command = "gopls" 
+
+[language-server.python]
+command = "pylsp" 
+
+[language-server.lua]
+command = "lua-language-server" 
+

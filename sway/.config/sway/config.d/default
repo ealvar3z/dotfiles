@@ -11,7 +11,7 @@ set $right l
 exec_always --no-startup-id foot --server
 
 # Set default terminal emulator
-set $term footclient
+set $term alacritty
 
 # Application launcher
 set $launcher fuzzel
@@ -19,7 +19,7 @@ set $launcher fuzzel
 # Application menu
 set $menu nwg-drawer
 
-set $powermenu nwgbar
+set $powermenu nwg-bar
 
 ### Idle configuration
 exec swayidle -w\

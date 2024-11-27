@@ -1,0 +1,30 @@
+[editor]
+# General settings
+theme = "dark_high_contrast"
+auto-save = true
+
+# Key mappings for Insert Mode
+[keys.insert]
+j = { k = "normal_mode" }
+
+[languages]
+# LSP configuration for supported languages
+
+[languages.html]
+language-server = { command = "vscode-html-language-server", args = ["--stdio"] }
+
+[languages.css]
+language-server = { command = "vscode-css-language-server", args = ["--stdio"] }
+
+[languages.bash]
+language-server = { command = "bash-language-server", args = ["start"] }
+
+[languages.go]
+language-server = { command = "gopls" }
+
+[languages.python]
+language-server = { command = "pylsp" }
+
+[languages.lua]
+language-server = { command = "lua-language-server" }
+

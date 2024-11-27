@@ -9,6 +9,8 @@ w3m/.w3m/w3mcache*
 w3m/.w3m/w3msrc*
 w3m/.w3m/w3mtmp*
 w3m/.w3m/history
+w3m/.w3m/cookie
+w3m/.w3m/known_hosts
 /bower_components/
 /log
 /node_modules/

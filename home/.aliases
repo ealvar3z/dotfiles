@@ -1,9 +1,12 @@
 # Unix
+alias mkdir="mkdir -p"
+alias tmux="zellij"
+alias yay='paru'
 alias ed='ed -p "> " "$@"'
+alias vi='helix'
 alias la="ls -a"
 alias ll="ls -al"
 alias ln="ln -v"
-alias mkdir="mkdir -p"
 alias c="clear"
 alias x="exit"
 
@@ -34,6 +37,9 @@ alias path='echo -e "${PATH//:/\\n}"'
 alias ..="cd ../"
 alias ...="cd ../.."
 alias ....="cd ../../.."
+alias d="cd ~/Downloads"
+alias conf="cd ~/.config"
+alias dots="cd ~/dotfiles"
 
 # Include custom aliases
 if [[ -f ~/.aliases.local ]]; then
