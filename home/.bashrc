@@ -38,15 +38,17 @@ _source_if() { [[ -r "$1" ]] && source "$1"; }
 export LANG=en_US.UTF-8 # assuming apt install language-pack-en done
 export TZ=America/New_York
 export HELP_BROWSER=w3m
+export BROWSERCLI=w3m
+export BROWSER=chromium
 export TERM=xterm-256color
 export CLICOLOR=1
 export HRULEWIDTH=79
-export EDITOR=vim
-export VISUAL=vim
-export EDITOR_PREFIX=vim
+export EDITOR=helix
+export VISUAL=helix
+export EDITOR_PREFIX=helix
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
-export GOBIN="$HOME/.local/bin"
+export GOBIN="$GOPATH/bin"
 # export PLAN9="/usr/local/plan9/plan9port"
 export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
@@ -124,7 +126,7 @@ pathprepend() {
 # "$PLAN9/bin" \
 pathprepend \
 	"$HOME/bin" \
-	"$HOME/.local/go/bin" \
+	"$GOBIN" \
 	/usr/local/go/bin \
 	/usr/local/bin
 
