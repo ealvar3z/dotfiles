@@ -1,9 +1,0 @@
-theme = "dark_high_contrast"
-
-[editor]
-line-number = "relative"
-auto-save = true
-
-[keys.insert.j]
-k = "normal_mode"
-
