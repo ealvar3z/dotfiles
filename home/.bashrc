@@ -161,7 +161,6 @@ shopt -s extglob
 # -------------------------- stty annoyances -------------------------
 
 stty -ixon # disable control-s/control-q tty flow control
-stty -ag BELL
 
 # ------------------------------ history -----------------------------
 
