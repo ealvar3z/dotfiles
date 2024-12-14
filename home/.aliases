@@ -1,8 +1,6 @@
 # Unix
 alias mkdir="mkdir -p"
 alias yay='paru'
-alias vi='helix'
-alias ed='/usr/bin/ed'
 alias la="ls -a"
 alias ll="ls -al"
 alias ln="ln -v"
