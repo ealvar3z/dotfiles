@@ -11,6 +11,7 @@ w3m/.w3m/w3mtmp*
 w3m/.w3m/history
 w3m/.w3m/cookie
 w3m/.w3m/known_hosts
+w3m/.w3m/*.txt
 /bower_components/
 /log
 /node_modules/
