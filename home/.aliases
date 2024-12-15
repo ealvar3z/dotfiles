@@ -7,6 +7,12 @@ alias ln="ln -v"
 alias c="clear"
 alias x="exit"
 
+# OpenBSD
+alias ai='doas pkg_add'
+alias ad='doas pkg_delete'
+alias au='doas pkg_add -u'
+alias as='pkg_info -Q'
+
 # Git
 alias ga='git add'
 alias gb='git branch'

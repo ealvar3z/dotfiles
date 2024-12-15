@@ -1,7 +1,6 @@
-ure vim-plug is installed and source it automatically
+" vim-plug automatically
 if empty(glob('~/.vim/autoload/plug.vim'))
-  silent !curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  silent execute "!curl -fLo  ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   autocmd VimEnter * PlugInstall | source $MYVIMRC
 endif
 
@@ -29,6 +28,7 @@ call plug#end()
 " Keymap settings
 map ; :
 inoremap jk <Esc>
+set pastetoggle=<F2>
 
 " General settings
 set sw=4      		" Set shift width to 4 globally

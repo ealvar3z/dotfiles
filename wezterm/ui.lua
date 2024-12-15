@@ -1,26 +1,21 @@
-local wezterm = require("wezterm")
-
 return {
+    setup = function(config)
+	config.colorscheme = "nord"
+	config.font = require("wezterm").font("UbuntuMono Nerd Font", { weight = "Medium" })
+	config.font_size = 19
+	config.allow_square_glyphs_to_overflow_width = "WhenFollowedBySpace"
+	config.animation_fps = 60
+	config.window_decorations = "RESIZE"
+	config.enable_tab_bar = false
+	config.hide_tab_bar_if_only_one_tab = true
 
-	font_size = 19,
-	font = wezterm.font("UbuntuMono Nerd Font"),
-
-	window_padding = {
-		left = 0,
-		right = 0,
-		top = 0,
-		bottom = 0,
+	config.window_padding = {
+	    left = 0,
+	    right = 0,
+	    top = 0,
+	    bottom = 0,
 	},
-
-	term = "xterm-256color",
-	animation_fps = 60,
-	max_fps = 60,
-	window_decorations = "RESIZE",
-
-	enable_tab_bar = false,
-	hide_tab_bar_if_only_one_tab = true,
-
-	colors = {
+	config. colors = {
 		foreground = "#d4be98", -- Default text color
 		cursor_bg = "#d4be98", -- Default text color
 		cursor_border = "#d4be98", -- Default text color
@@ -47,5 +42,7 @@ return {
 			"#8ec07c", -- Bright Cyan
 			"#ebdbb2", -- Bright White
 		},
-	},
+	    },
+    end,
 }
+
