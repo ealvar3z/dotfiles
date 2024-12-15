@@ -18,3 +18,14 @@ log/*.log
 rerun.txt
 tmp/**/*
 /tags
+
+.idea/
+.ionide/
+.projectile/
+.vscode
+.vscode/
+.zed
+
+dump.rdb
+acme.dump
+
