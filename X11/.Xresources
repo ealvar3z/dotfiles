@@ -1,0 +1,71 @@
+! ====== xterm
+! xterm*font: -misc-fixed-medium-r-normal--17-120-100-100-c-90-iso8859-1
+xterm*font: -*-spleen-medium-*-*-*-17-*-*-*-*-*-*-*
+! Xterm*faceName: DejaVuSansMNerdFontMono-Regular
+! Xterm*faceSize: 24
+
+
+! muted palette
+#define BG											#eae5ce
+#define FG											#444444
+*.background:										BG
+*.foreground:										FG
+
+! solarized (light)
+
+! black
+*.color0:			FG
+*.color8:			#333333
+
+! red
+*.color1:			#dc322f
+*.color9:			#cb4b16
+
+! green
+*.color2:			#859900
+*.color10:			#93a1a1
+
+! yellow
+*.color3:			#b58900
+*.color11:			#839496
+
+! blue
+*.color4:			#268bd2
+*.color12:			#657b83
+
+! magenta
+*.color5:			#d33682
+*.color13:			#6c71c4
+
+! cyan
+*.color6:			#2aa198
+*.color14:			#586e75
+
+! white (gray)
+*.color7:			#d9d7cc
+*.color15:			#e5e5e5
+
+! remove addditional black border
+xterm*borderWidth            		: 0
+xterm*internalBorder         		: 2
+xterm*termName               		: xterm-256color
+
+! make alt key work normally
+xterm*vt100.metaSendsEscape  		: true
+! save ~10,000 lines of scrollback
+xterm*v100.saveLines         		: 10240
+xterm*vt100.scrollBar        		: false
+
+! terminal bell tells the window manager to raise urgent flag
+xterm*vt100.bellIsUrgent     		: true
+xterm*allowBoldFonts         		: false
+xterm*allowMouseOps			: true
+xterm*scrollTtyOutput			: false
+xterm*scrollKey              		: true
+
+! shift + left click to open selection in web browser
+xterm*VT100*Translations				: #override Shift : exec-formatted("chrome --enable-unveil '%t'", PRIMARY)
+
+! ====== xclock
+XClock*analog										: false
+XClock*twentyfour								:	true
