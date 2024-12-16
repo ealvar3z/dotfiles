@@ -1,0 +1,47 @@
+#!/bin/sh
+# 9virt: wrapper script for launching Plan 9 in libvirt
+# usage: 9virt disk [iso] [args...]
+
+disk=$1
+iso=$2
+shift 2
+
+# Check if libvirt is installed
+if ! command -v virsh >/dev/null 2>&1; then
+    echo "Error: libvirt is not installed. Install it using your package manager." >&2
+    exit 1
+fi
+
+# Generate a unique VM name based on the disk file
+vm_name="plan9-$(basename $disk | sed 's/[^a-zA-Z0-9]/-/g')"
+
+# Check if the VM already exists
+if virsh list --all | grep -q "$vm_name"; then
+    echo "VM $vm_name already exists. Starting it..."
+    virsh start "$vm_name"
+    virsh console "$vm_name"
+    exit 0
+fi
+
+virt-install \
+    --name "$vm_name" \
+    --ram 2048 \
+    --vcpus 2 \
+    --disk "path=$disk,format=qcow2" \
+    ${iso:+--cdrom "$iso"} \
+    --os-type hvm \
+    --os-variant generic \
+    --network network=default,model=virtio \
+    --graphics none \
+    --video virtio \
+    --console pty,target_type=serial \
+    --boot cdrom,hd \
+    "$@"
+
+if [ $? -eq 0 ]; then
+    echo "VM $vm_name started successfully. Connecting to console..."
+    virsh console "$vm_name"
+else
+    echo "Failed to start VM $vm_name. Check logs for details." >&2
+    exit 1
+fi

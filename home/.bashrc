@@ -123,7 +123,6 @@ pathprepend() {
 } && export -f pathprepend
 
 # remember last arg will be first in path
-# "$PLAN9/bin" \
 pathprepend \
 	"$HOME/bin" \
 	"$GOBIN" \
