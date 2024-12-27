@@ -267,6 +267,8 @@ if ! shopt -oq posix; then
     . /usr/share/bash-completion/bash_completion
   elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
+  elif [ -r /usr/pkg/share/bash-completion/bash_completion ]; then
+	. /usr/pkg/share/bash-completion/bash_completion
   fi
 fi
 # -------------------- personalized configuration --------------------
@@ -278,4 +280,3 @@ _source_if "$HOME/.aliases"
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
-. /usr/bin/bashacks
