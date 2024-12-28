@@ -1,4 +1,4 @@
-local wezterm = require("wezterm")
+local config = require("wezterm")
 
 config.term = "xterm-256color"
 config.audible_bell = "Disabled"
