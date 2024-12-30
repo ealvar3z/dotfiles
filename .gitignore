@@ -21,3 +21,13 @@ log/*.log
 rerun.txt
 tmp/**/*
 /tags
+emacs/.emacs.d/auto-save-list/*
+emacs/.emacs.d/backups/*
+emacs/.emacs.d/custom.el
+emacs/.emacs.d/history
+emacs/.emacs.d/recentf
+emacs/.emacs.d/transient/*
+emacs/.emacs.d/emms/*
+emacs/.emacs.d/eshell/*
+emacs/.emacs.d/elpa/*
+emacs/.emacs.d/elfeed/*
