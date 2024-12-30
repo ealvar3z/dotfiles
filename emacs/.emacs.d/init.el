@@ -99,49 +99,7 @@
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-
-;; Short answers only please
-
 (setq use-short-answers t)
-
-;; Evil mode
-(use-package evil
-  :init
-  (setq evil-want-integration r)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll-t) ;; enable C-u for scrolling
-  (setq evil-want-C-i-jump nil) ;; avoids TAB conflicts
-  (setq evil-respect-visual-line-mode t)
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package evil-escape
-  :after evil
-  :init
-  (setq evil-escape-key-sequence "jk")
-  (setq evil-escape-delay 0.2)
-  :config
-  (evil-escape-mode 1))
-
-;; General.el for leader keybinding
-(use-package general
-  :config
-  (general-create-definer eax-leader-def
-			  :prefix "SPC")
-
-  (eax-leader-def
-   :states '(normal visual)
-   "f" '(:ignore r :which-key "files")
-   "ff" '(find-file :which-key "find file")
-   "fs" '(save-buffer :which-key "save file")
-   "b" '(:ignore t :which-key "buffers")
-   "bn" '(switch-to-buffer :which-key "switch-buffer")
-   "bd" '(kill-buffer :which-key "kill buffer")))
 
 ;; Spacious padding
 
@@ -232,7 +190,8 @@
   (("C-h f" . helpful-function)
    ("C-h x" . helpful-command)
    ("C-h k" . helpful-key)
-   ("C-h v" . helpful-variable)))
+   ("C-h v" . 
+helpful-variable)))
 
 ;;; Text mode settings
 
@@ -786,3 +745,58 @@
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((dot . t))) ; this line activates GraophViz dot
+
+;; MY OWN CUSTOM SETTINGS FOR EWS
+;; Evil mode
+(use-package evil
+  :init
+  (setq evil-want-integration r)
+  (setq evil-want-keybinding nil)
+  (setq evil-want-C-u-scroll-t) ;; enable C-u for scrolling
+  (setq evil-want-C-i-jump nil) ;; avoids TAB conflicts
+  (setq evil-respect-visual-line-mode t)
+  :config
+  (evil-mode 1))
+
+(use-package evil-collection
+  :after evil
+  :config
+  (evil-collection-init))
+
+(use-package evil-escape
+  :after evil
+  :init
+  (setq evil-escape-key-sequence "jk")
+  (setq evil-escape-delay 0.2)
+  :config
+  (evil-escape-mode 1))
+
+;; General.el for leader keybinding
+(use-package general
+  :config
+  (general-create-definer eax-leader-def
+			  :prefix "SPC")
+
+  (eax-leader-def
+   :states '(normal visual)
+   "f" '(:ignore r :which-key "files")
+   "ff" '(find-file :which-key "find file")
+   "fs" '(save-buffer :which-key "save file")
+   "b" '(:ignore t :which-key "buffers")
+   "bn" '(switch-to-buffer :which-key "switch-buffer")
+   "bd" '(kill-buffer :which-key "kill buffer")))
+
+;; Projectile
+(use-package projectile
+  :ensure t
+  :bind
+  (("C-c p f" . projectile-find-file)))
+
+;; Counsel
+(use-package counsel
+  :ensure t
+  :bind
+  (("M-x"   . counsel-M-x)
+   ("C-."   . 'counsel-imenu)
+   ("C-o"   . 'counsel-outline)
+   ("C-x b" . 'counsel-switch-buffer)))
