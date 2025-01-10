@@ -1,6 +1,5 @@
 # Unix
 alias mkdir="mkdir -p"
-alias yay='paru'
 alias la="ls -a"
 alias ll="ls -al"
 alias ln="ln -v"

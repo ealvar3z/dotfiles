@@ -35,17 +35,16 @@ _source_if() { [[ -r "$1" ]] && source "$1"; }
 # ----------------------- environment variables ----------------------
 #                           (also see envx)
 
-export LANG=en_US.UTF-8 # assuming apt install language-pack-en done
-export TZ=America/New_York
+export LANG=en_US.UTF-8 
 export HELP_BROWSER=w3m
 export BROWSERCLI=w3m
 export BROWSER=chromium
 export TERM=xterm-256color
 export CLICOLOR=1
 export HRULEWIDTH=79
-export EDITOR=/usr/local/bin/vim
-export VISUAL=/usr/local/bin/vim
-export EDITOR_PREFIX=/usr/local/bin/vim
+export EDITOR=/usr/bin/ed
+export VISUAL=/usr/bin/vi 
+export EDITOR_PREFIX=/usr/bin/vi  
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
