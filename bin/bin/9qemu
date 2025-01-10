@@ -1,17 +1,55 @@
-#!/bin/sh
-# 9qemu: wrapper script for launching Plan 9 in qemu
-# usage: 9qemu disk [args...]
+#!/usr/bin/env bash
 
-disk=$1 && shift
-if [ $(uname -s) = Linux ]; then
-    # non-linux systems may not have this
-    kvm=-enable-kvm
-fi
-flags="-net nic,model=virtio-net-pci,macaddr=52:54:00:12:34:56 \
-    -netdev user,id=net0,hostfwd=tcp::17010-:17010,hostfwd=tcp::17019-:17019,\
-    hostfwd=tcp::17020-:17020,hostfwd=tcp::12567-:567 \
-    -device e1000,netdev=net0\
-    -device virtio-scsi-pci,id=scsi -device scsi-hd,drive=vd0 \
-    -device sb16 -vga std -drive if=none,id=vd0,file=$disk"
+# Variables
+VM_DIR="$HOME/VM"
+QCOW_IMG="$VM_DIR/9front.qcow2.img"
+ISO_DIR="$VM_DIR/ISO"
+ISO_FILE="$ISO_DIR/9front.386.iso"
+IMAGE_SIZE="30G"
+VM_MEMORY="1024"
+MAC_ADDR="52:54:00:00:EE:03"
 
-qemu-system-x86_64 $kvm -m 2G $flags $*
+# Functions
+die() {
+    echo "Error: $1" >&2
+    exit 1
+}
+
+create_qcow_image() {
+    echo "Creating QCOW2 image..."
+    mkdir -p "$VM_DIR" || die "Failed to create VM directory."
+    qemu-img create -f qcow2 "$QCOW_IMG" "$IMAGE_SIZE" \
+        || die "Failed to create QCOW2 image."
+    echo "QCOW2 image created at $QCOW_IMG."
+}
+
+run_vm() {
+    echo "Running the 9front VM..."
+    [[ -f "$ISO_FILE" ]] || die "ISO file not found at $ISO_FILE. Please download it."
+    [[ -f "$QCOW_IMG" ]] || die "QCOW2 image not found at $QCOW_IMG. Please create it first."
+
+    qemu-system-x86_64 -cpu host -enable-kvm -m "$VM_MEMORY" \
+        -net nic,model=virtio,macaddr="$MAC_ADDR" -net user \
+        -device virtio-scsi-pci,id=scsi \
+        -drive if=none,id=vd0,file="$QCOW_IMG" \
+        -device scsi-hd,drive=vd0 \
+        -drive if=none,id=vd1,file="$ISO_FILE" \
+        -device scsi-cd,drive=vd1,bootindex=0 \
+        || die "Failed to start the VM."
+}
+
+# Main
+case "$1" in
+    create)
+        create_qcow_image
+        ;;
+    run)
+        run_vm
+        ;;
+    *)
+        echo "Usage: $0 {create|run}"
+        echo "  create: Create a QCOW2 image for the VM."
+        echo "  run: Run the 9front VM using QEMU."
+        exit 1
+        ;;
+esac
