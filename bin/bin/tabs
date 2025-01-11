@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+set -eu
+
+TAB_WIDTH=${1:-2}
+
+if ! [[ "$TAB_WIDTH" =~ ^[0-9]+$ ]]; then
+	echo "Error: tab width must be a pos int."
+	exit 1
+fi
+
+expand --tabs="$TAB_WIDTH"
