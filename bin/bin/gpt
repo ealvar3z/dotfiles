@@ -1,0 +1,37 @@
+#!/usr/bin/env ruby
+
+def have?(cmd)
+  ENV["PATH"].split(File::PATH_SEPARATOR).any? do |dir|
+    File.executable?(File.join(dir, cmd))
+  end
+end
+
+def read_api_key
+  key = File.join(ENV["HOME"], ".config", "gpt", "key")
+  unless File.exist?(key) && File.readable?(key)
+    raise "Error: #{key} file does not exist."
+  end
+
+  File.read(key).strip
+end
+
+def main
+  unless have?("mods")
+    puts "requires charmbracelete/mods"
+    exit 1
+  end
+
+  # Read the API key from the file
+  api_key = read_api_key
+if ENV['OPENAI_API_KEY'] != api_key
+	ENV['OPENAI_API_KEY'] = api_key
+end
+
+args = ['mods', '--continue-last', *ARGV]
+exec(*args)
+rescue StandardError => e
+	warn e.message
+	exit 1
+end
+
+main() if __FILE__ == $PROGRAM_NAME

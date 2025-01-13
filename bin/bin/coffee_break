@@ -1,0 +1,72 @@
+#!/usr/bin/env ruby
+
+require 'curses'
+
+def coffee_break
+	Curses.init_screen
+	Curses.curs_set(0)
+	Curses.timeout = 20
+	
+	frames = [
+	  [
+	    "  ( (",
+	    "   ) )",
+	    " ......",
+	    " \\ ~~~ /",
+	    "  )___(",
+	    " (_____)",
+	  ],
+	  [
+	    "  ) )",
+	    "   ( (",
+	    " ......",
+	    " \\ ~~~ /",
+	    "  )___(",
+	    " (_____)",
+	  ],
+	  [
+	    "  ( (",
+	    " .....",
+	    "   ) )",
+	    " \\ ~~~/",
+	    "  )___(",
+	    " (_____)",
+	   ]
+	]
+	frame_count = frames.size
+	frame_idx = 0
+	msg = "brb: brewing coffee"
+
+	begin
+	  loop do
+	    Curses.clear
+		
+	    h, w = Curses.lines, Curses.cols
+	    coffee_x = (w / 2) - 8
+    	coffee_y = (h / 2) - 3
+    	msg_x = (w / 2) - (msg.size / 2)
+    	msg_y = coffee_y + 8
+    
+    	frames[frame_idx].each_with_index do |line, i|
+    	  Curses.setpos(coffee_y + i, coffee_x)
+    	  Curses.addstr(line)
+    	end
+    
+    	Curses.setpos(msg_y, msg_x)
+    	Curses.addstr(msg)
+    	Curses.refresh
+    
+    	key = Curses.getch
+    	break if key == 'q'
+    
+    	frame_idx = (frame_idx + 1) % frame_count
+    	sleep(0.2)
+    end
+ensure
+  Curses.close_screen
+end
+end
+
+if __FILE__ == $PROGRAM_NAME
+  coffee_break()
+end

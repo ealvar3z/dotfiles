@@ -1,55 +1,54 @@
-#!/usr/bin/env bash
+#!/usr/bin/env ruby
+# frozen_string_literal: true
 
-# Variables
-VM_DIR="$HOME/VM"
-QCOW_IMG="$VM_DIR/9front.qcow2.img"
-ISO_DIR="$VM_DIR/ISO"
-ISO_FILE="$ISO_DIR/9front.386.iso"
-IMAGE_SIZE="30G"
-VM_MEMORY="1024"
-MAC_ADDR="52:54:00:00:EE:03"
+VM_DIR = "#{ENV['HOME']}/VM"
+QCOW_IMG = "#{VM_DIR}/9front.qcow2.img"
+ISO_DIR = "#{VM_DIR}/ISO"
+ISO_FILE = "#{ISO_DIR}/9front.386.iso"
+IMAGE_SIZE = '30G'
+VM_MEMORY = '1024'
+MAC_ADDR = '52:54:00:00:EE:03'
 
-# Functions
-die() {
-    echo "Error: $1" >&2
-    exit 1
-}
+def die(message = 'An error occurred')
+  raise message.to_s
+end
 
-create_qcow_image() {
-    echo "Creating QCOW2 image..."
-    mkdir -p "$VM_DIR" || die "Failed to create VM directory."
-    qemu-img create -f qcow2 "$QCOW_IMG" "$IMAGE_SIZE" \
-        || die "Failed to create QCOW2 image."
-    echo "QCOW2 image created at $QCOW_IMG."
-}
+def create_qcow2_image
+  puts 'Creating QCOW2 image...'
+  Dir.mkdir(VM_DIR.to_s) || die('Failed to create VM directory.')
+  args = %W[qemu-img create -f qcow2 #{QCOW_IMG} #{IMAGE_SIZE}]
+  exec(*args) || die('Failed to create QCOW2 image.')
+  puts 'QCOW2 image created at: ' # {QCOW_IMG}."
+end
 
-run_vm() {
-    echo "Running the 9front VM..."
-    [[ -f "$ISO_FILE" ]] || die "ISO file not found at $ISO_FILE. Please download it."
-    [[ -f "$QCOW_IMG" ]] || die "QCOW2 image not found at $QCOW_IMG. Please create it first."
+def run_vm
+  puts 'Running the 9front VM...'
+  args = <<~EOF
+    qemu-system-x86_64 -cpu host -enable-kvm -m "#{VM_MEMORY}" \
+    -net nic,model=virtio,macaddr="#{MAC_ADDR}" -net user \
+    -device virtio-scsi-pci,id=scsi \
+    -drive if=none,id=vd0,file="#{QCOW_IMG}" \
+    -device scsi-hd,drive=vd0 \
+    -drive if=none,id=vd1,file="#{ISO_FILE}" \
+    -device scsi-cd,drive=vd1,bootindex=0#{' '}
+  EOF
+  exec(*args) || die('Failed to start the VM.')
+end
 
-    qemu-system-x86_64 -cpu host -enable-kvm -m "$VM_MEMORY" \
-        -net nic,model=virtio,macaddr="$MAC_ADDR" -net user \
-        -device virtio-scsi-pci,id=scsi \
-        -drive if=none,id=vd0,file="$QCOW_IMG" \
-        -device scsi-hd,drive=vd0 \
-        -drive if=none,id=vd1,file="$ISO_FILE" \
-        -device scsi-cd,drive=vd1,bootindex=0 \
-        || die "Failed to start the VM."
-}
+def usage
+  puts "Usage: #{$PROGRAM_NAME} (create|run)"
+  puts '  create: Creates a QCOW2 image for the VM.'
+  puts '  run: Runs the 9front VM using QEMU.'
+  exit 1
+end
 
-# Main
-case "$1" in
-    create)
-        create_qcow_image
-        ;;
-    run)
-        run_vm
-        ;;
-    *)
-        echo "Usage: $0 {create|run}"
-        echo "  create: Create a QCOW2 image for the VM."
-        echo "  run: Run the 9front VM using QEMU."
-        exit 1
-        ;;
-esac
+begin
+  op = ARGV.first
+  case op
+  when 'create' then create_qcow2_image
+  when 'run' then run_vm
+  else usage
+  end
+rescue StandardError, RuntimeError => e
+  puts "Error: #{e.message}"
+end

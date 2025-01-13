@@ -35,9 +35,7 @@ end
 # Clone the Plan 9 Port repository and install it
 def install_plan9
   plan9_dir = "#{ENV['HOME']}/plan9"
-  unless File.directory?(plan9_dir)
-    system("git clone https://github.com/9fans/plan9port #{plan9_dir}")
-  end
+  system("git clone https://github.com/9fans/plan9port #{plan9_dir}") unless File.directory?(plan9_dir)
 
   Dir.chdir("#{plan9_dir}/plan9port") do
     system("./INSTALL -r #{plan9_dir}")
@@ -54,6 +52,6 @@ begin
   puts 'Installing Plan 9 Port...'
   install_plan9
   puts 'Plan 9 Port installation completed successfully!'
-rescue => e
+rescue StandardError => e
   puts "Error: #{e.message}"
 end
