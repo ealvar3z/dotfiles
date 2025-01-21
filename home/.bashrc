@@ -1,4 +1,4 @@
-#!/usr/local/bin/bash
+#!/usr/bin/bash
 # shellcheck disable=SC1090,SC1091
 
 case $- in
@@ -43,8 +43,13 @@ export TERM=xterm-256color
 export CLICOLOR=1
 export HRULEWIDTH=79
 export EDITOR=/usr/bin/ed
+<<<<<<< HEAD
 export VISUAL=/usr/bin/vi 
 export EDITOR_PREFIX=/usr/bin/vi  
+=======
+export VISUAL=/usr/bin/vi
+export EDITOR_PREFIX=/usr/local/bin/vim
+>>>>>>> 7548f86 (update dots)
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
