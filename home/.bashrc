@@ -43,13 +43,7 @@ export TERM=xterm-256color
 export CLICOLOR=1
 export HRULEWIDTH=79
 export EDITOR=/usr/bin/ed
-<<<<<<< HEAD
 export VISUAL=/usr/bin/vi 
-export EDITOR_PREFIX=/usr/bin/vi  
-=======
-export VISUAL=/usr/bin/vi
-export EDITOR_PREFIX=/usr/local/bin/vim
->>>>>>> 7548f86 (update dots)
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
@@ -59,10 +53,6 @@ export LC_COLLATE=C
 export CFLAGS="-Wall -Wextra -Werror -O0 -g -fsanitize=address -fno-omit-frame-pointer -finstrument-functions"
 
 [[ -d /.vim/spell ]] && export VIMSPELL=("$HOME/.vim/spell/*.add")
-
-# ----------------------------- PostgreSQL ----------------------------
-
-#export PGDATABASE=cowork
 
 # -------------------------------- gpg -------------------------------
 
@@ -130,8 +120,7 @@ pathprepend() {
 pathprepend \
 	"$HOME/bin" \
 	"$GOBIN" \
-	/usr/local/go/bin \
-	/usr/local/bin
+	/usr/local/go/bin
 
 pathappend \
 	/usr/local/bin \
@@ -228,7 +217,7 @@ _have setxkbmap && test -n "$DISPLAY" &&
 #      (use exec scripts instead, which work from vim and subprocs)
 
 unalias -a
-alias '??'=google
+alias '??'=gpt
 alias dot='cd $DOTFILES'
 alias scripts='cd $SCRIPTS'
 alias free='free -h'
@@ -275,6 +264,7 @@ if ! shopt -oq posix; then
 	. /usr/pkg/share/bash-completion/bash_completion
   fi
 fi
+
 # -------------------- personalized configuration --------------------
 
 _source_if "$HOME/.bash_personal"
