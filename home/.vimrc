@@ -13,6 +13,7 @@ set backspace=2
 set encoding=utf8
 set ignorecase
 set incsearch
+set mouse=a
 set nobackup
 set nocompatible
 set nohlsearch
@@ -42,6 +43,7 @@ augroup commenting_blocks_of_code
 augroup END
 noremap <silent> ,cc :<C-B>silent <C-E>s/^/<C-R>=escape(b:comment_leader,'\/')<CR>/<CR>:nohlsearch<CR>
 noremap <silent> ,cu :<C-B>silent <C-E>s/^\V<C-R>=escape(b:comment_leader,'\/')<CR>//e<CR>:nohlsearch<CR>
+nnoremap <silent> ,d :r !date -u "+\%Y-\%m-\%dT\%H:\%M:\%SZ"<CR>
 
 " Language specific indentation.
 filetype plugin indent on

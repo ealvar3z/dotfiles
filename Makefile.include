@@ -1,8 +1,0 @@
-build:
-install:
-uninstall:
-clean:
-.PHONY: build install uninstall clean
-
-% : %.RB
-	@ruby $< > $@

@@ -31,7 +31,7 @@
 ;;
 ;;; Code:
 
-;; Emacs 29? EWS leverages functionality from the latest Emacs version.
+;; Emacs 29?
 
 (when (< emacs-major-version 29)
   (error "Emacs Writing Studio requires Emacs version 29 or later"))
@@ -40,8 +40,7 @@
 
 (setq-default custom-file (expand-file-name "custom.el" user-emacs-directory))
 
-(when (file-exists-p custom-file)
-  (load custom-file))
+(load custom-file :no-error-if-file-is-missing)
 
 (keymap-global-set "C-c w v" 'customize-variable)
 
@@ -98,18 +97,19 @@
 (tool-bar-mode -1)
 (menu-bar-mode -1)
 (scroll-bar-mode -1)
-(add-to-list 'default-frame-alist '(fullscreen . maximized))
-(setq use-short-answers t)
+
+;; Short answers only please
+
+(setq-default use-short-answers t)
 
 ;; Spacious padding
 
 (use-package spacious-padding
   :custom
   (line-spacing 3)
-  :init
   (spacious-padding-mode 1))
 
-;; Modus Themes
+;; Modus and EF Themes
 
 (use-package modus-themes
   :custom
@@ -117,12 +117,12 @@
   (modus-themes-bold-constructs t)
   (modus-themes-mixed-fonts t)
   (modus-themes-to-toggle '(modus-operandi-tinted modus-vivendi-tinted))
-  :init
-  (load-theme 'modus-operandi-tinted :no-confirm)
   :bind
   (("C-c w t t" . modus-themes-toggle)
    ("C-c w t m" . modus-themes-select)
    ("C-c w t s" . consult-theme)))
+
+(use-package ef-themes)
 
 ;; Mixed-pich mode
 
@@ -183,6 +183,9 @@
   (which-key-lighter nil)
   (which-key-sort-order 'which-key-description-order))
 
+(when (display-graphic-p)
+  (context-menu-mode))
+
 ;; Improved help buffers
 
 (use-package helpful
@@ -190,8 +193,7 @@
   (("C-h f" . helpful-function)
    ("C-h x" . helpful-command)
    ("C-h k" . helpful-key)
-   ("C-h v" . 
-helpful-variable)))
+   ("C-h v" . helpful-variable)))
 
 ;;; Text mode settings
 
@@ -276,13 +278,6 @@ helpful-variable)))
   (org-modern-radio-target nil)
   (org-modern-statistics nil)
   (org-modern-progress nil))
-
-;; Consult convenience functions
-
-(use-package consult
-  :bind
-  (("C-c w h" . consult-org-heading)
-   ("C-c w g" . consult-grep)))
 
 ;; INSPIRATION
 
@@ -437,6 +432,13 @@ helpful-variable)))
    ("C-c w d r" . denote-rename-file)
    ("C-c w d R" . denote-rename-file-using-front-matter)))
 
+;; Consult convenience functions
+
+(use-package consult
+  :bind
+  (("C-c w h" . consult-org-heading)
+   ("C-c w g" . consult-grep)))
+
 ;; Consult-Notes for easy access to notes
 
 (use-package consult-notes
@@ -548,8 +550,6 @@ helpful-variable)))
 ;; Titlecasing
 
 (use-package titlecase
-  :custom
-  (titlecase-style 'apa)
   :bind
   (("C-c w s t" . titlecase-dwim)
    ("C-c w s c" . ews-org-headings-titlecase)))
@@ -578,9 +578,17 @@ helpful-variable)))
   (ediff-split-window-function 'split-window-horizontally)
   (ediff-window-setup-function 'ediff-setup-windows-plain))
 
+;; Enable Other text modes
+
+;; Fontain mode for writing scrits
+
 (use-package fountain-mode)
 
+;; Markdown mode
+
 (use-package markdown-mode)
+
+;; PUBLICATION
 
 ;; Generic Org Export Settings
 
@@ -588,7 +596,6 @@ helpful-variable)))
   :custom
   (org-export-with-drawers nil)
   (org-export-with-todo-keywords nil)
-  (org-export-with-broken-links t)
   (org-export-with-toc nil)
   (org-export-with-smart-quotes t)
   (org-export-date-timestamp-format "%e %B %Y"))
@@ -683,7 +690,7 @@ helpful-variable)))
   :init
   (put 'dired-find-alternate-file 'disabled nil))
 
-;; Hide hidden files
+;; Hide or display hidden files
 
 (use-package dired
   :ensure nil
@@ -745,58 +752,3 @@ helpful-variable)))
 (org-babel-do-load-languages
  'org-babel-load-languages
  '((dot . t))) ; this line activates GraophViz dot
-
-;; MY OWN CUSTOM SETTINGS FOR EWS
-;; Evil mode
-(use-package evil
-  :init
-  (setq evil-want-integration r)
-  (setq evil-want-keybinding nil)
-  (setq evil-want-C-u-scroll-t) ;; enable C-u for scrolling
-  (setq evil-want-C-i-jump nil) ;; avoids TAB conflicts
-  (setq evil-respect-visual-line-mode t)
-  :config
-  (evil-mode 1))
-
-(use-package evil-collection
-  :after evil
-  :config
-  (evil-collection-init))
-
-(use-package evil-escape
-  :after evil
-  :init
-  (setq evil-escape-key-sequence "jk")
-  (setq evil-escape-delay 0.2)
-  :config
-  (evil-escape-mode 1))
-
-;; General.el for leader keybinding
-(use-package general
-  :config
-  (general-create-definer eax-leader-def
-			  :prefix "SPC")
-
-  (eax-leader-def
-   :states '(normal visual)
-   "f" '(:ignore r :which-key "files")
-   "ff" '(find-file :which-key "find file")
-   "fs" '(save-buffer :which-key "save file")
-   "b" '(:ignore t :which-key "buffers")
-   "bn" '(switch-to-buffer :which-key "switch-buffer")
-   "bd" '(kill-buffer :which-key "kill buffer")))
-
-;; Projectile
-(use-package projectile
-  :ensure t
-  :bind
-  (("C-c p f" . projectile-find-file)))
-
-;; Counsel
-(use-package counsel
-  :ensure t
-  :bind
-  (("M-x"   . counsel-M-x)
-   ("C-."   . 'counsel-imenu)
-   ("C-o"   . 'counsel-outline)
-   ("C-x b" . 'counsel-switch-buffer)))

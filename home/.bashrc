@@ -33,7 +33,6 @@ _have() { type "$1" &>/dev/null; }
 _source_if() { [[ -r "$1" ]] && source "$1"; }
 
 # ----------------------- environment variables ----------------------
-#                           (also see envx)
 
 export LANG=en_US.UTF-8 
 export HELP_BROWSER=w3m
@@ -47,7 +46,7 @@ export VISUAL=/usr/bin/vi
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
-# export PLAN9="/usr/local/plan9/plan9port"
+export PTB_DIR="$HOME/src/ptb/txt"
 export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
 export CFLAGS="-Wall -Wextra -Werror -O0 -g -fsanitize=address -fno-omit-frame-pointer -finstrument-functions"
@@ -228,21 +227,6 @@ alias diff='diff --color'
 alias temp='cd $(mktemp -d)'
 
 _have vim && alias vi=vim
-
-# ----------------------------- functions ----------------------------
-
-envx() {
-	local envfile="${1:-"$HOME/.env"}"
-	[[ ! -e "$envfile" ]] && echo "$envfile not found" && return 1
-	while IFS= read -r line; do
-		name=${line%%=*}
-		value=${line#*=}
-		[[ -z "${name}" || $name =~ ^# ]] && continue
-		export "$name"="$value"
-	done <"$envfile"
-} && export -f envx
-
-[[ -e "$HOME/.env" ]] && envx "$HOME/.env"
 
 # ------------- source external dependencies / completion ------------
 
