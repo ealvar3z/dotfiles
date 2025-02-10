@@ -22,6 +22,9 @@ alias gp='git push'
 alias gs='git diff'
 alias gs='git status'
 
+# Arch
+yay='paru'
+
 # llm manpages
 alias ?="llm"
 

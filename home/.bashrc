@@ -47,9 +47,9 @@ export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
 export PTB_DIR="$HOME/src/ptb/txt"
+export DOOMBIN="$HOME/.config/emacs/bin"
 export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
-export CFLAGS="-Wall -Wextra -Werror -O0 -g -fsanitize=address -fno-omit-frame-pointer -finstrument-functions"
 
 [[ -d /.vim/spell ]] && export VIMSPELL=("$HOME/.vim/spell/*.add")
 
@@ -119,6 +119,7 @@ pathprepend() {
 pathprepend \
 	"$HOME/bin" \
 	"$GOBIN" \
+	"$DOOMBIN" \
 	/usr/local/go/bin
 
 pathappend \
