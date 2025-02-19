@@ -4,10 +4,9 @@
 # https://bugs.debian.org/990353
 set completion-ignore-case On
 set show-all-if-ambiguous On
-# want vi to be the default editor for readline
-set editing-mode vi
 
 # vi settings
+set editing-mode vi
 $if mode=vi
     # insert mode
     set keymap vi-insert

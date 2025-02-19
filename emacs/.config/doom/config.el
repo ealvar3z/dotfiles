@@ -42,6 +42,10 @@
 ;; change `org-directory'. It must be set before org loads!
 (setq org-directory "~/org/")
 
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-banner)
+(remove-hook '+doom-dashboard-functions #'doom-dashboard-widget-footer)
+(setq +doom-dashboard-ascii-banner-fn (lambda () (insert "E M A C S")))
+
 (setq vterm-module-cmake-args "-DUSE_SYSTEM_LIBVTERM=yes")
 
 ;; Whenever you reconfigure a package, make sure to wrap your config in an

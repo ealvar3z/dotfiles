@@ -38,7 +38,7 @@ export LANG=en_US.UTF-8
 export HELP_BROWSER=w3m
 export BROWSERCLI=w3m
 export BROWSER=chromium
-export TERM=xterm-256color
+export TERM=tmux-256color
 export CLICOLOR=1
 export HRULEWIDTH=79
 export EDITOR=/usr/bin/ed
@@ -47,7 +47,7 @@ export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
 export PTB_DIR="$HOME/src/ptb/txt"
-export DOOMBIN="$HOME/.config/emacs/bin"
+export DOOMBIN="$HOME/.emacs.d/bin"
 export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
 
