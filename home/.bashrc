@@ -42,7 +42,7 @@ export TERM=tmux-256color
 export CLICOLOR=1
 export HRULEWIDTH=79
 export EDITOR=/usr/bin/ed
-export VISUAL=/usr/bin/vi 
+export VISUAL=/usr/bin/vi
 export DOTFILES="$HOME/dotfiles"
 export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
@@ -50,6 +50,7 @@ export PTB_DIR="$HOME/src/ptb/txt"
 export DOOMBIN="$HOME/.emacs.d/bin"
 export ODIN_PATH="$HOME/src/Odin"
 export PYTHONDONTWRITEBYTECODE=2
+export OAUTH_REFRESH_TOKEN=$(rbw get davmail.oauth.refreshToken)
 export LC_COLLATE=C
 
 [[ -d /.vim/spell ]] && export VIMSPELL=("$HOME/.vim/spell/*.add")
