@@ -1,0 +1,131 @@
+#!/usr/bin/env bash
+# install-odin -- self-explanatory (tested on ubuntu 24.04)
+set -euo pipefail
+
+usage() {
+	cat <<EOF
+Usage: $0 [OPTIONS]
+
+Options:
+  -r, --repo-path PATH	Where is the Odin repo (default: ./Odin)
+  -d, --dev BRANCH	What dev branch to check out (e.g. dev-YYYY-MM)
+  -l, --llvm VERSION	Which llvm-config version to use (default: 18)
+  -h, --help		Show this message
+
+Example:
+  $0 -r ~/src/Odin -d dev-2025-02 -l 17
+EOF
+}
+
+REPO_PATH="./Odin"
+DEV_BRANCH=""
+LLVM_VERSION="18"
+
+while [ "$#" -gt 0 ]; do
+	case "$1" in
+		-r|--repo-path)
+			REPO_PATH="$2"
+			shift 2
+			;;
+		-d|--dev)
+			DEV_BRANCH="$2"
+			shift 2
+			;;
+		-l|--llvm)
+			LLVM_VERSION="$2"
+			shift 2
+			;;
+		-h|--help)
+			usage
+			exit 1
+			;;
+	esac
+done
+
+command_exists() {
+	command -v "$1" >/dev/null 2>&1
+}
+
+echo "=== Odin Installer ==="
+
+if [[ "$LLVM_VERSION" != "14" && \
+      "$LLVM_VERSION" != "17" && \
+      "$LLVM_VERSION" != "18"]]; then
+      echo "[ERROR]: Unsupported LLVM version: $LLVM_VERSION."
+      exit 1
+fi
+
+DEPS=(clang git make)
+LLVM_CONFIG_CMD="llvm-config-$LLVM_VERSION"
+DEPS+=("$LLVM_CONFIG_CMD")
+
+if command_exists odin; then
+	echo "Odin is already installed"
+	ODIN_INSTALLED=true
+else
+	echo "Will install Odin shortly..."
+	ODIN_INSTALLED=false
+fi
+
+if [[ "$REPO_PATH/.git" ]]; then
+	echo "Odin repo found at: $REPO_PATH"
+	REPO_DOWNLOADED=true
+else
+	echo "No repo found. Will clone shortly..."
+	REPO_DOWNLOADED=false
+fi
+
+if [[ "$ODIN_INSTALLED" == false ]] && \
+   [[ "$REPO_DOWNLOADED" == false ]]; then
+   echo "Cloning repo..."
+   if ! command_exists git; then
+   	echo "[ERROR]: You need to install git, and re-run." >&2
+	exit 1
+    fi
+    git clone https://github.com/odin-lang/Odin "$REPO_PATH" || \
+    { echo "[ERROR]: Failed to clone repo." >&2; exit 1 }
+fi
+
+MISSING_DEPS=0
+echo "Checking dependencies..."
+for d in "${DEPS[@]}"; do
+	if ! command_exists "$d"; then
+		echo " - Dependency '$d' is missing."
+		MISSING_DEPS=1
+	else
+		echo " - Dependency '$d' is present."
+	fi
+done
+
+if [[ "$MISSING_DEPS" -ne 0 ]]; then
+	echo "Installing missing deps..."
+	sudo apt-get install -y clang llvm
+fi
+
+echo "Installing Odin..."
+cd "$REPO_PATH" || { echo "[ERROR]: Cannot change directory"; exit 1 }
+
+if [[ -n "$DEV_BRANCH" ]]; then
+	echo "Checking out branch: $DEV_BRANCH"
+	git checkout "$DEV_BRANCH"
+fi
+
+echo "Pulling the latest changes..."
+git pull
+
+echo "Building Odin using 'make release-native'..."
+make relese-native || { echo "[ERROR]: Build failed (check atomic.h)"; exit 1 }
+
+ODIN_ROOT="$(pwd)"
+ODIN_PATH="${HOME}/odin"
+
+echo ""
+echo "Odin installation completed successfully."
+echo "Please add the following lines to your env (e.g., ~/.bashrc or ~/.profile):"
+echo "		export ODIN_ROOT=\"$ODIN_ROOT\""
+echo "		export ODIN_PATH=\"$ODIN_PATH\""
+echo "		export PATH=\"\$ODIN_ROOT:\$PATH\""
+echo ""
+echo "Then, restart your shell or source your profile to update your environment."
+exit 0
+

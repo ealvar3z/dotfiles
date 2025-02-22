@@ -48,6 +48,7 @@ export GOPATH="$HOME/go"
 export GOBIN="$GOPATH/bin"
 export PTB_DIR="$HOME/src/ptb/txt"
 export DOOMBIN="$HOME/.emacs.d/bin"
+export ODIN_PATH="$HOME/src/Odin"
 export PYTHONDONTWRITEBYTECODE=2
 export LC_COLLATE=C
 
@@ -118,8 +119,10 @@ pathprepend() {
 # remember last arg will be first in path
 pathprepend \
 	"$HOME/bin" \
+	"$HOME/.local/bin" \
 	"$GOBIN" \
 	"$DOOMBIN" \
+	"$ODIN_PATH" \
 	/usr/local/go/bin
 
 pathappend \
@@ -259,3 +262,5 @@ _source_if "$HOME/.aliases"
 
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
+
+. "$HOME/.local/bin/env"

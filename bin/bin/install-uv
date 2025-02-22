@@ -1,0 +1,9 @@
+#!/usr/bin/bash
+
+set -euo pipefail
+
+if ! command -v curl; then 
+	echo "install curl." >&2
+fi
+
+curl -LsSf https://astral.sh/uv/install.sh | sh
