@@ -264,4 +264,3 @@ _source_if "$HOME/.aliases"
 
 [ -f ~/.fzf.bash ] && source ~/.fzf.bash
 
-. "$HOME/.local/bin/env"
