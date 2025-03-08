@@ -1,0 +1,4 @@
+address "irc://chat.sr.ht:6697"
+nickname "eax"
+username eax
+password-cmd bw get password senpai 
