@@ -11,7 +11,7 @@ set $right l
 exec_always --no-startup-id foot --server
 
 # Set default terminal emulator
-set $term alacritty
+set $term ghostty
 
 # Application launcher
 set $launcher fuzzel
@@ -216,9 +216,9 @@ bindsym $mod+f1 exec ~/.config/sway/scripts/lockman.sh
     # Launch the file explorer
     bindsym $mod+e exec thunar
     # Launch the browser
-    bindsym $mod+b exec librewolf
+    bindsym $mod+b exec qutebrowser
     # Launch the text editor
-    bindsym $mod+t exec mousepad
+    bindsym $mod+t exec nvim
     # Launch the calculator
     bindsym $mod+c exec galculator
     # Launch the clipboard manager
