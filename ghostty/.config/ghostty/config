@@ -1,4 +1,5 @@
 font-family=Monaco
+font-size=10
 background-opacity=0.8
 gtk-titlebar=false
 theme=iTerm2 Default
