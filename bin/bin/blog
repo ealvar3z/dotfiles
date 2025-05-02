@@ -21,11 +21,11 @@ $title =~ s/[^[:alnum:]]+/-/g;
 $title = lc($title);
 $title =~ s/^-|-$//g; #trim hyphens from start/end
 
-my $fn = File::Spec->catfile($posts, "${date}_$title.txt");
-die "[ERROR] File '$fn' alread exists!\n" if -e $fn;
+my $f = File::Spec->catfile($posts, "${date}_$title.txt");
+die "[ERROR] File '$f' alread exists!\n" if -e $f;
 
-open my $fh, ">", $fn;
+open my $fh, ">", $f;
 print $fh "\n";
 close $fh;
 
-exec $ed, $fn;
+exec $ed, $f;
