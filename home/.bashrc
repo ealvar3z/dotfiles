@@ -39,7 +39,7 @@ export HELP_BROWSER=w3m
 export BROWSERCLI=w3m
 export BROWSER=chromium
 export TERM=tmux-256color
-export CLICOLOR=1
+export CLICOLOR=0
 export HRULEWIDTH=79
 export EDITOR=/usr/bin/ed
 export VISUAL=/usr/bin/vi
@@ -50,7 +50,6 @@ export PTB_DIR="$HOME/src/ptb/txt"
 export DOOMBIN="$HOME/.emacs.d/bin"
 export ODIN_PATH="$HOME/src/Odin"
 export PYTHONDONTWRITEBYTECODE=2
-export OAUTH_REFRESH_TOKEN=$(rbw get davmail.oauth.refreshToken)
 export LC_COLLATE=C
 
 [[ -d /.vim/spell ]] && export VIMSPELL=("$HOME/.vim/spell/*.add")
