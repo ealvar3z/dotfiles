@@ -152,12 +152,11 @@ vim.opt.smartindent = true
 vim.opt.termguicolors = false
 vim.opt.updatetime = 250
 vim.cmd [[colorscheme ron]]
+vim.cmd [[ map ; : ]]
 
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<CR>", { noremap = true, silent = true })
-vim.keymap.set("n", ";", ";", { noremap = true, silent = true })
 vim.api.nvim_set_keymap("n", "<C-k>", ":tabnext<CR>", {noremap = true, silent = true})
 vim.api.nvim_set_keymap("n", "<C-j>", ":tabprevious<CR>", {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<C-t>', ':tabnew | :Ex<CR>', {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<C-w>', ':tabclose<CR>', {noremap = true, silent = true})
-	
