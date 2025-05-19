@@ -1,71 +1,89 @@
-! ====== xterm
-! xterm*font: -misc-fixed-medium-r-normal--17-120-100-100-c-90-iso8859-1
-xterm*font: -*-spleen-medium-*-*-*-17-*-*-*-*-*-*-*
-! Xterm*faceName: DejaVuSansMNerdFontMono-Regular
-! Xterm*faceSize: 24
+! Font settings (for programs that do not support fontconfig)
+! ===========================================================
+Xft*antialias: 1
+Xft*rgba: rgb
+Xft*autohint: 0
+Xft*hinting: 1
+Xft*hintstyle: hintslight
+Xft*lcdfilter: lcddefault
 
+! xterm
+! =====
 
-! muted palette
-#define BG											#eae5ce
-#define FG											#444444
-*.background:										BG
-*.foreground:										FG
+! Basic settings
+xterm*termName: xterm-256color
+xterm*locale: true
+xterm*utf8: 1
+xterm*utf8Fonts: always
+xterm*dynamicColors: true
+xterm*background: black
+xterm*foreground: white
 
-! solarized (light)
+! UI components
+xterm*toolBar: false
+xterm*scrollBar: false
+! xterm*geometry: 140x24
+xterm*internalBorder: 20
+xterm*borderWidth: 0
 
-! black
-*.color0:			FG
-*.color8:			#333333
+! Cursor shape
+! Allowing the cursor to use the reverse colour of the background or
+! foreground avoids circumstances, such as in Vim, where the cursor can
+! be virtually impossible to see.  Note that this does not work when the
+! cursor is not a block character (cursorUnderLine: true).
+xterm*cursorColor: reverse
+xterm*cursorUnderLine: false
+xterm*pointerShape: XTerm
 
-! red
-*.color1:			#dc322f
-*.color9:			#cb4b16
+! Cursor blink
+xterm*cursorBlink: false
+xterm*cursorOffTime: 600
+xterm*cursorOnTime: 1200
 
-! green
-*.color2:			#859900
-*.color10:			#93a1a1
+! Bell
+xterm*bellIsUrgent: false
+xterm*bellSupressTime: 100
+xterm*marginBell: false
+xterm*visualBell: false
 
-! yellow
-*.color3:			#b58900
-*.color11:			#839496
+! Text highlighting
+xterm*highlightColor: XtDefaultForeground
+xterm*highlightReverse: true
+xterm*highlightSelection: true
+xterm*highlightTextColor: XtDefaultBackground
 
-! blue
-*.color4:			#268bd2
-*.color12:			#657b83
+! Font settings
+xterm*faceName: Terminus
+xterm*faceSize: 14
+xterm*renderFont: true
+xterm*boldColors: false
+xterm*faceSize1: 10
+xterm*faceSize2: 14
+xterm*faceSize3: 18
+xterm*faceSize4: 24
+xterm*faceSize5: 32
+xterm*faceSize6: 48
+xterm*forceBoxChars: false
+xterm*limitFontsets: 3
+xterm*scaleHeight: 1.0
 
-! magenta
-*.color5:			#d33682
-*.color13:			#6c71c4
+! Scroll and output
+xterm*jumpScroll: true
+xterm*multiScroll: true
+xterm*saveLines: 9999
+xterm*scrollKey: true
+xterm*scrollTtyKeypress: true
+xterm*scrollTtyOutput: false
 
-! cyan
-*.color6:			#2aa198
-*.color14:			#586e75
+! Backspace behaviour
+xterm*backarrowKey: false
+xterm*metaSendsEscape: true
+xterm*ttyModes: erase ^?
 
-! white (gray)
-*.color7:			#d9d7cc
-*.color15:			#e5e5e5
+! Key bindings.  Use C-S-{c,v} to copy/paste as in GNOME terminal.  The
+! keys "Prior" and "Next" represent PgUp and PgDown respectively.
+xterm*selectToClipboard: true
+xterm*translations: #override \n\
+	Ctrl Shift <KeyPress>C: select-end(SELECT, CLIPBOARD) \n\
+	Ctrl Shift <KeyPress>V: insert-selection(SELECT, CLIPBOARD) \n\
 
-! remove addditional black border
-xterm*borderWidth            		: 0
-xterm*internalBorder         		: 2
-xterm*termName               		: xterm-256color
-
-! make alt key work normally
-xterm*vt100.metaSendsEscape  		: true
-! save ~10,000 lines of scrollback
-xterm*v100.saveLines         		: 10240
-xterm*vt100.scrollBar        		: false
-
-! terminal bell tells the window manager to raise urgent flag
-xterm*vt100.bellIsUrgent     		: true
-xterm*allowBoldFonts         		: false
-xterm*allowMouseOps			: true
-xterm*scrollTtyOutput			: false
-xterm*scrollKey              		: true
-
-! shift + left click to open selection in web browser
-xterm*VT100*Translations				: #override Shift : exec-formatted("chrome --enable-unveil '%t'", PRIMARY)
-
-! ====== xclock
-XClock*analog										: false
-XClock*twentyfour								:	true
