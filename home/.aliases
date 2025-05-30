@@ -24,7 +24,6 @@ alias gs='git diff'
 alias gs='git status'
 
 # Arch
-alias yay='paru'
 
 # llm manpages
 alias ?="llm"

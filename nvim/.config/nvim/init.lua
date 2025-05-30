@@ -151,8 +151,8 @@ vim.opt.shiftwidth = 4
 vim.opt.smartindent = true
 vim.opt.termguicolors = false
 vim.opt.updatetime = 250
-vim.cmd [[colorscheme ron]]
-vim.cmd [[ map ; : ]]
+vim.cmd [[colorscheme default]]
+vim.cmd [[map ; :]]
 
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<CR>", { noremap = true, silent = true })
@@ -160,3 +160,51 @@ vim.api.nvim_set_keymap("n", "<C-k>", ":tabnext<CR>", {noremap = true, silent = 
 vim.api.nvim_set_keymap("n", "<C-j>", ":tabprevious<CR>", {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<C-t>', ':tabnew | :Ex<CR>', {noremap = true, silent = true})
 vim.api.nvim_set_keymap('n', '<C-w>', ':tabclose<CR>', {noremap = true, silent = true})
+
+-- Filetype specific settings
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "python",
+  callback = function()
+    vim.opt_local.expandtab = true  -- Use spaces instead of tabs
+    vim.opt_local.shiftwidth = 4    -- Indentation amount
+    vim.opt_local.softtabstop = 4
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = {"c", "cpp"},
+  callback = function()
+    vim.opt_local.expandtab = false  -- Use tabs instead of spaces
+    vim.opt_local.shiftwidth = 4     -- Indentation amount
+    vim.opt_local.softtabstop = 4
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "bash",
+  callback = function()
+    vim.opt_local.expandtab = true  -- Use spaces instead of tabs
+    vim.opt_local.shiftwidth = 2    -- Indentation amount
+    vim.opt_local.softtabstop = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "perl",
+  callback = function()
+    vim.opt_local.expandtab = true  -- Use spaces instead of tabs
+    vim.opt_local.shiftwidth = 2    -- Indentation amount
+    vim.opt_local.softtabstop = 2
+  end,
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "go",
+  callback = function()
+    vim.opt_local.expandtab = false  -- Use tabs instead of spaces
+    vim.opt_local.shiftwidth = 4     -- Indentation amount
+    vim.opt_local.softtabstop = 4
+  end,
+})
+

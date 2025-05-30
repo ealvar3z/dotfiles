@@ -172,39 +172,75 @@ PROMPT_LONG=20
 PROMPT_MAX=95
 PROMPT_AT=@
 
+# __ps1() {
+# 	local P='$' dir="${PWD##*/}" B countme short long double \
+# 		r='\[\e[31m\]'  \
+# 		y='\[\e[33m\]'  \
+# 		b='\[\e[36m\]'  \
+#     x='\[\e[0m\]'   \
+#     h='\[\e[34m\]'  \
+#     p='\[\e[34m\]'
+#     # w='\[\e[35m\]'
+#     # g='\[\e[30m\]'
+#
+#   [[ $EUID == 0 ]] && P='#' && u=$r && p=$u # root
+# 	[[ $PWD = / ]] && dir=/
+# 	[[ $PWD = "$HOME" ]] && dir='~'
+#
+# 	B=$(git branch --show-current 2>/dev/null)
+# 	[[ $dir = "$B" ]] && B=.
+# 	countme="$USER$PROMPT_AT$(hostname):$dir($B)\$ "
+#
+# 	[[ $B == master || $B == main ]] && b="$r"
+# 	[[ -n "$B" ]] && B="$x($r$B$x)"
+#
+# 	short="$x\u$x$PROMPT_AT$x\h$x:$x$dir$B$x$P$x "
+# 	long="$x╔ $x\u$x$PROMPT_AT$x\h$x:$x$dir$B\n$x╚ $x$P$x "
+# 	double="$x╔ $x\u$x$PROMPT_AT$x\h$x:$x$dir\n$x║ $B\n$r╚ $x$P$x "
+#
+# 	if ((${#countme} > PROMPT_MAX)); then
+# 		PS1="$double"
+# 	elif ((${#countme} > PROMPT_LONG)); then
+# 		PS1="$long"
+# 	else
+# 		PS1="$short"
+# 	fi
+# }
 __ps1() {
-	local P='$' dir="${PWD##*/}" B countme short long double \
-		r='\[\e[31m\]'  \
-		u='\[\e[33m\]'  \
-		b='\[\e[36m\]'  \
-    x='\[\e[0m\]'   \
-    h='\[\e[34m\]'  \
-    p='\[\e[34m\]'
-    # w='\[\e[35m\]'
-    # g='\[\e[30m\]'
+    local P='$' dir="${PWD##*/}" B VENV countme short long double \
+        r='\[\e[31m\]'  \
+        y='\[\e[33m\]'  \
+        b='\[\e[36m\]'  \
+        x='\[\e[0m\]'   \
+        h='\[\e[34m\]'  \
+        p='\[\e[34m\]'
 
-  [[ $EUID == 0 ]] && P='#' && u=$r && p=$u # root
-	[[ $PWD = / ]] && dir=/
-	[[ $PWD = "$HOME" ]] && dir='~'
+    [[ $EUID == 0 ]] && P='#' && u=$r && p=$u # root
+    [[ $PWD = / ]] && dir=/
+    [[ $PWD = "$HOME" ]] && dir='~'
 
-	B=$(git branch --show-current 2>/dev/null)
-	[[ $dir = "$B" ]] && B=.
-	countme="$USER$PROMPT_AT$(hostname):$dir($B)\$ "
+    B=$(git branch --show-current 2>/dev/null)
+    [[ $dir = "$B" ]] && B=.
+    if [[ -n "$VIRTUAL_ENV" ]]; then
+        VENV="($(basename "$VIRTUAL_ENV"))"
+    else
+        VENV=""
+    fi
+    countme="$USER$PROMPT_AT$(hostname):$dir$VENV$B\$ "
 
-	[[ $B == master || $B == main ]] && b="$r"
-	[[ -n "$B" ]] && B="$u($b$B$u)"
+    [[ $B == master || $B == main ]] && b="$r"
+    [[ -n "$B" ]] && B="$x($r$B$x)"
+    short="$x\u$x$PROMPT_AT$x\h$x:$x$dir$VENV$B$x$P$x "
+    long="$x╔ $x\u$x$PROMPT_AT$x\h$x:$x$dir$VENV$B\n$x╚ $x$P$x "
+    double="$x╔ $x\u$x$PROMPT_AT$x\h$x:$x$dir\n$x║ $VENV$B\n$r╚ $x$P$x "
 
-	short="$u\u$u$PROMPT_AT$u\h$u:$r$dir$B$p$P$x "
-	long="$u╔ $u\u$u$PROMPT_AT$u\h$u:$r$dir$B\n$u╚ $p$P$x "
-	double="$u╔ $u\u$h$PROMPT_AT$h\h$u:$r$dir\n$u║ $B\n$u╚ $p$P$x "
-
-	if ((${#countme} > PROMPT_MAX)); then
-		PS1="$double"
-	elif ((${#countme} > PROMPT_LONG)); then
-		PS1="$long"
-	else
-		PS1="$short"
-	fi
+    if ((${#countme} > PROMPT_MAX)); then
+        PS1="$double"
+    elif ((${#countme} > PROMPT_LONG)); then
+        PS1="$long"
+    else
+        PS1="$short"
+    fi
 }
 
 PROMPT_COMMAND="__ps1"
@@ -230,7 +266,7 @@ alias chmox='chmod +x'
 alias diff='diff --color'
 alias temp='cd $(mktemp -d)'
 
-_have vim && alias vi=vim
+_have nvim && alias vi=nvim
 
 # ------------- source external dependencies / completion ------------
 
