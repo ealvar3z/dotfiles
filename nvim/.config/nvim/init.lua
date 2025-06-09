@@ -153,6 +153,9 @@ vim.opt.termguicolors = false
 vim.opt.updatetime = 250
 vim.cmd [[colorscheme default]]
 vim.cmd [[map ; :]]
+vim.cmd [[digraph  XR 8891    " ⊻  XOR]]
+vim.cmd [[digraph  NA 8892    " ⊼  NAND]]
+vim.cmd [[digraph  NR 8893    " ⊽  NOR]]
 
 vim.g.mapleader = " "
 vim.keymap.set("n", "<leader>t", "<cmd>ToggleTerm<CR>", { noremap = true, silent = true })
