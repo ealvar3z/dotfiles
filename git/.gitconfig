@@ -15,7 +15,7 @@
 	br = branch
 [core]
   excludesfile = ~/.gitignore
-  autocrlf = input
+	autocrlf = input
 [merge]
   ff = only
 [commit]
