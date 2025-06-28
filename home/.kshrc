@@ -2,22 +2,30 @@
 
 stty status '^T'
 
-PATH=$HOME/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin
-
 # use vim if it's installed, vi otherwise
 case "$(command -v vim)" in
   */vim) VIM=vim ;;
   *)     VIM=vi  ;;
 esac
 
-EDITOR=$VIM
-VISUAL=$VIM
-FCEDIT=$EDITOR
-PAGER=less
-LESS='-iMRS -x2'
-CLICOLOR=0
-HISTFILE=$HOME/.ksh_history
-HISTSIZE=20000
+export LANG=en_us.UTF-8
+export LC_ALL=en_US.UTF-8
+export LC_CTYPE=en_US.UTF-8
+export PS1='; '
+export TERM='xterm-mono'
+export EDITOR=$VIM
+export VISUAL=$VIM
+export FCEDIT=$EDITOR
+export PAGER=less
+export LESS='-iMRS -x2'
+export CLICOLOR=0
+export HISTFILE=$HOME/.ksh_history
+export HISTSIZE=20000
+export GOROOT="/usr/local/go"
+export GOPATH="$HOME/go"
+export GOBIN="$GOPATH/bin"
+export PATH=$HOME/bin:/bin:/sbin:/usr/bin:/usr/sbin:/usr/X11R6/bin:/usr/local/bin:/usr/local/sbin
+export PATH="$GOBIN:$PATH"
 
 set -o vi
 
