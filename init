@@ -3,17 +3,18 @@
 # init dotfile setup aka set up gitmodule && and pull bics
 #
 
-command curl &>/dev/null || echo "[!]: curl not installed"
-command stow &>/dev/null || echo "[!]: stow not installed"
+echo "Installing curl and stow..."
+sudo pacman -S curl stow
 
+pushd "$PWD/git"
 git submodule init
 git submodule update
+popd
 
 # setup bics
 if [[ ! -d ~/.bics ]]; then
 	echo 'installing bics'
-	bash <(curl -sSL https://raw.githubusercontent.com/bahamas10/bics) init
-	rm -r ~/.bics/plugins
-	stow -t ~ bics
+	pushd "$HOME"
+	bash <(curl -sSL https://raw.githubusercontent.com/bahamas10/bics/master/bics) init
 fi
 

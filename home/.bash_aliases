@@ -3,7 +3,7 @@ alias mkdir="mkdir -p"
 alias la="ls -a"
 alias ll="ls -al"
 alias ln="ln -v"
-alias hx="helix"
+alias vi="nvim"
 alias c="clear"
 alias x="exit"
 
@@ -24,6 +24,7 @@ alias gs='git diff'
 alias gs='git status'
 
 # Arch
+yay="paru"
 
 # llm manpages
 alias ?="llm"

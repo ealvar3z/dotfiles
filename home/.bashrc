@@ -157,7 +157,7 @@ PS1+='\[${COLOR256[0]}\]\[${COLOR256[257]}\]'"$(zonename 2>/dev/null | grep -q '
 PS1+='\[${PROMPT_COLORS[3]}\]\h '
 
 # uname
-PS1+='\[${PROMPT_COLORS[2]}\]'"$(uname | tr '[:upper:]' '[:lower:]')"' '
+# PS1+='\[${PROMPT_COLORS[2]}\]'"$(uname | tr '[:upper:]' '[:lower:]')"' '
 
 # cwd
 PS1+='\[${PROMPT_COLORS[5]}\]\w '
@@ -166,7 +166,7 @@ PS1+='\[${PROMPT_COLORS[5]}\]\w '
 PS1+='$(branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); [[ -n $branch ]] && echo "\[${PROMPT_COLORS[2]}\](\[${PROMPT_COLORS[3]}\]git:$branch\[${PROMPT_COLORS[2]}\]) ")'
 
 # prompt character
-PS1+='\[${PROMPT_COLORS[0]}\]\;\[${COLOR256[256]}\] '
+PS1+='\[${PROMPT_COLORS[0]}\]\n;\[${COLOR256[256]}\] '
 
 # set the theme
 set_prompt_colors 24
@@ -178,7 +178,7 @@ _prompt_command() {
         local pwd=${PWD/#$HOME/\~}
         local ssh=
         [[ -n $SSH_CLIENT ]] && ssh='[ssh] '
-        printf "\033]0;%s%s@%s:%s\007" "$ssh" $host" "$pwd"
+        printf "\033]0;%s%s@%s:%s\007" "$ssh" "$host" "$pwd"
 }
 PROMPT_COMMAND=_prompt_command
 
