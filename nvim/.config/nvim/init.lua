@@ -290,11 +290,6 @@ vim.keymap.set("n", "<leader>c", ":cnext<CR>", { noremap = true, silent = true }
 vim.keymap.set("n", "<leader>p", ":cprevious<CR>", { noremap = true, silent = true })
 vim.keymap.set("n", "<leader>q", ":cwindow<CR>", { noremap = true, silent = true })
 
-vim.api.nvim_set_keymap("n", "<C-k>", ":tabnext<CR>", {noremap = true, silent = true})
-vim.api.nvim_set_keymap("n", "<C-j>", ":tabprevious<CR>", {noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<C-t>', ':tabnew | :Ex<CR>', {noremap = true, silent = true})
-vim.api.nvim_set_keymap('n', '<C-w>', ':tabclose<CR>', {noremap = true, silent = true})
-
 -- Filetype specific settings
 
 vim.api.nvim_create_autocmd("FileType", {

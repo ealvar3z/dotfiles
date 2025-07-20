@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+command -v yay &>/dev/null || echo "[!]: yay is not installed. Installing now..."
+
+sudo pacman -S --needed git base-devel
+git clone https://aur.archlinux.org/yay-bin.git
+pushd yay-bin
+makepkg -si
+popd
+
+# readarray is a synonym for mapfile (fyi)
+readarray -t deps < dependencies.txt
+
+deps=(
+  curl
+  neovim
+  stow
+  tmux
+)
+for dep in "${deps[@]}"; do
+  echo "Updating pacman and AUR..."
+  yay -Syu
+  echo "Installing package: $d"
+  yay -S "$d"
+done
