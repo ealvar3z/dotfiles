@@ -40,6 +40,7 @@
 
 ;; Disable line numbers for certain modes
 (dolist (mode '(org-mode-hook
+                markdown-mode-hook
                 term-mode-hook
                 shell-mode-hook
                 eshell-mode-hook
@@ -132,6 +133,23 @@
   :config
   (require 'evil-org-agenda)
   (evil-org-agenda-set-keys))
+
+;; Markdown mode + pandoc export
+(use-package markdown-mode
+  :ensure t
+  :mode ("\\.md\\" . markdown-mode)
+  :init
+  ;; Associate additional extensions
+  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+  :config
+  ;; Use pandoc for HTML export
+  (setq markdown-command "pandoc -f gfm -t html5"))
+
+;; Evil-markdown
+(use-package evil-markdown
+  :after (evil markdown-mode)
+  :ensure t
+  :hook (markdown-mode . evil-markdown-mode))
 
 ;; Evil-lion for alignment
 (use-package evil-lion
@@ -297,6 +315,17 @@
   :config
   (setq company-minimum-prefix-length 1
         company-idle-delay 0.1))
+
+;; Yasnippet
+(use-package yasnippet
+  :ensure t
+  :hook ((prog-mode . yas-minor-mode)
+         (text-mode . yas-minor-mode))
+  :config
+  (yas-reload-all))
+
+;; Yasnippet-snippets
+(use-package yasnippet-snippets :ensure t after yasnippet)
 
 ;; Magit for Git
 (use-package magit
@@ -557,7 +586,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(ace-link company-go company-lua counsel-dash devdocs dired-open elpy
+              evil-args evil-collection evil-commentary
+              evil-easymotion evil-exchange evil-indent-plus evil-lion
+              evil-markdown evil-matchit evil-numbers evil-org
+              evil-snipe evil-surround evil-textobj-anyblock
+              evil-visualstar eww-lnum flymake-lua general helpful
+              info-colors ivy-rich julia-mode julia-repl lsp-ui
+              luarocks magit org-ref org-roam projectile))
  '(warning-suppress-log-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
