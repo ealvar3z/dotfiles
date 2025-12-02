@@ -23,6 +23,7 @@
 (setq use-package-always-ensure t)
 
 ;; General settings
+(load-theme 'modus-vivendi)
 (setq inhibit-startup-message t)
 (scroll-bar-mode -1)
 (tool-bar-mode -1)
@@ -262,11 +263,37 @@
 
 ;; Programming language support
 ;; C
+(defconst my-c-style
+  '((c-tab-always-indent        . t)
+    (c-basic-offset             . 0)
+    (c-comment-only-line-offset . 2)
+
+    ;; Brace rules
+    (c-hanging-braces-alist     . ((defun-open after)
+                                   (defun-close before after)
+                                   (substatement-open)
+                                   (brace-list-open)))
+
+    (c-cleanup-list             . (scope-operator
+                                   empty-defun-braces
+                                   defun-close-semi))
+    (c-offsets-alist
+     (substatement-open . -2)
+     (block-open        . -2)
+     (case-label        . 2)
+     (arglist-close     . c-lineup-arglist)))
+
+  "My custom C style: GNU-ish defuns with K&R-ish control braces.")
+
 (use-package cc-mode
-  :ensure nil
-  :hook (c-mode . (lambda ()
-                    (setq c-default-style "linux"
-                          c-basic-offset 4))))
+    :ensure nil
+    :config
+    (c-add-style "user" my-c-style)
+    :hook
+    (c-mode . (lambda ()
+            (setq c-default-style "user"
+				    indent-tabs-mode nil
+                    tab-width 4))))
 
 ;; Perl
 (use-package cperl-mode
@@ -299,6 +326,7 @@
   :commands lsp
   :hook ((c-mode . lsp)
          (c++-mode . lsp)
+         (elisp-mode . lsp)
          (python-mode . lsp)
          (go-mode . lsp)
          (julia-mode . lsp))
@@ -586,15 +614,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ace-link company-go company-lua counsel-dash devdocs dired-open elpy
-              evil-args evil-collection evil-commentary
-              evil-easymotion evil-exchange evil-indent-plus evil-lion
-              evil-markdown evil-matchit evil-numbers evil-org
-              evil-snipe evil-surround evil-textobj-anyblock
-              evil-visualstar eww-lnum flymake-lua general helpful
-              info-colors ivy-rich julia-mode julia-repl lsp-ui
-              luarocks magit org-ref org-roam projectile))
+ '(package-selected-packages nil)
  '(warning-suppress-log-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
