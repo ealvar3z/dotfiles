@@ -102,7 +102,10 @@
 ;; Evil Escape
 (use-package evil-escape
    :after evil
-   :config (evil-escape-key-sequence "jk"))
+   :init
+   (setq evil-escape-key-sequence "jk"
+         evil-escape-delay 0.15)
+   :config (evil-escape-mode 1))
    
 ;; Evil commentary for commenting code
 (use-package evil-commentary
@@ -258,16 +261,16 @@
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)))
 
-;; Emacs LIsp + REPL (ielm)
-(use-package elisp-mode
+;; Emacs Lisp + REPL (ielm)
+(use-package emacs-lisp-mode
    :ensure nil
-   :mode ("\\.el\\'" . emacs-lisp-mode)
+   :init
+   (add-to-list 'auto-mode-alist '("\\.el\\'" . emacs-lisp-mode))
    :hook ((emacs-lisp-mode . eldoc-mode)
           (emacs-lisp-mode . company-mode))
-   :config
-   (define-key emacs-lisp-mode-map (kbd "C-c C-b") #'eval-buffer)
-   (define-key emacs-lisp-mode-map (kbd "C-c C-r") #'eval-region)
-   (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'ielm))
+   :bind (("C-c C-b" . eval-buffer)
+          ("C-c C-r" . eval-region)
+          ("C-c C-z" . ielm)))
 
 (use-package ielm
   :ensure nil
@@ -297,13 +300,21 @@
      (c-mode-common . company-mode)))
 
 ;; Perl
+(defalias 'perl-mode 'cperl-mode)
 (use-package cperl-mode
   :ensure nil
-  :mode ("\\.\\([pP][Llm]\\|al\\)\\'" . cperl-mode)
+  :mode ("\\.[pP][Llm]\\'" . cperl-mode)
   :interpreter (("perl" . cperl-mode)
                 ("perl5" . cperl-mode))
+  :hook
+  (cperl-mode . my-cperl-setup)
   :config
-  (setq cperl-indent-level 4))
+  (defun my-cperl-setup ()
+         (setq compile-command
+               (format "perl %s" (shell-quote-argument buffer-file-name)))
+
+  (local-set-key (kbd "C-c h") #'cperl-perldoc)
+  (setq cperl-indent-level 4)))
 
 ;; Python
 (use-package python
@@ -324,13 +335,18 @@
 
 ;; LSP support for better code intelligence
 (use-package lsp-mode
-  :commands lsp
-  :hook ((c-mode . lsp)
-         (c++-mode . lsp)
-         (elisp-mode . lsp)
-         (python-mode . lsp)
-         (go-mode . lsp)
-         (julia-mode . lsp))
+  :commands (lsp lsp-deferred)
+  :hook ((c-mode        . lsp-deferred)
+         (c++-mode      . lsp-deferred)
+         (elisp-mode    . lsp)
+         (python-mode   . lsp-deferred)
+         (go-mode       . lsp-deferred)
+         (julia-mode    . lsp-deferred))
+  :init
+  ;; keep cc-mode's indentation and your custom C
+  ;; style. clangd still provides xref/hover/completion
+  (setq lsp-enable-indentation nil
+        lsp-enable-on-type-formatting nil)
   :config
   (setq lsp-headerline-breadcrumb-enable nil))
 
@@ -598,9 +614,19 @@
   ;; Info navigation
   "i" '(:ignore t :which-key "info")
   "ii" '(info :which-key "open info")
-  "id" '(info-display-manual :which-key "display manual"))
+  "id" '(info-display-manual :which-key "display manual")
 
-
+  ;; LSP
+  "l"   '(:ignore t :which-key "lsp")
+  "ll"  '(lsp :which-key "start lsp")
+  "ld"  '(lsp-find-definition :which-key "definition")
+  "lD"  '(lsp-find-declaration :which-key "declaration")
+  "lh"  '(lsp-describe-thing-at-point :which-key "describe symbol")
+  "lr"  '(lsp-rename :which-key "rename symbol")
+  "lf"  '(lsp-format-buffer :which-key "format buffer")
+  "la"  '(lsp-execute-code-action :which-key "code action")
+  "lR"  '(lsp-restart-workspace :which-key "restart workspace"))
+  
 ;; Add language-specific documentation to leader key
 ;; (leader-def
 ;;   "dl" '(:ignore t :which-key "language docs")
@@ -615,7 +641,15 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages nil)
+ '(package-selected-packages
+   '(ace-link company-go counsel-dash devdocs dired-open elpy evil-args
+              evil-collection evil-commentary evil-easymotion
+              evil-escape evil-exchange evil-indent-plus evil-lion
+              evil-markdown evil-matchit evil-numbers evil-org
+              evil-snipe evil-surround evil-textobj-anyblock
+              evil-visualstar eww-lnum general helpful info-colors
+              ivy-rich julia-mode julia-repl lsp-ui magit org-ref
+              org-roam projectile))
  '(warning-suppress-log-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
