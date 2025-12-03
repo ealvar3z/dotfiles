@@ -99,6 +99,11 @@
   :config
   (evil-collection-init))
 
+;; Evil Escape
+(use-package evil-escape
+   :after evil
+   :config (evil-escape-key-sequence "jk"))
+   
 ;; Evil commentary for commenting code
 (use-package evil-commentary
   :after evil
@@ -253,6 +258,22 @@
          ("C-c n f" . org-roam-node-find)
          ("C-c n i" . org-roam-node-insert)))
 
+;; Emacs LIsp + REPL (ielm)
+(use-package elisp-mode
+   :ensure nil
+   :mode ("\\.el\\'" . emacs-lisp-mode)
+   :hook ((emacs-lisp-mode . eldoc-mode)
+          (emacs-lisp-mode . company-mode))
+   :config
+   (define-key emacs-lisp-mode-map (kbd "C-c C-b") #'eval-buffer)
+   (define-key emacs-lisp-mode-map (kbd "C-c C-r") #'eval-region)
+   (define-key emacs-lisp-mode-map (kbd "C-c C-z") #'ielm))
+
+(use-package ielm
+  :ensure nil
+  :commands (ielm)
+  :hook (ielm-mode . eldoc-mode))
+
 ;; REPL support for Julia
 (use-package julia-mode)
 
@@ -263,37 +284,17 @@
 
 ;; Programming language support
 ;; C
-(defconst my-c-style
-  '((c-tab-always-indent        . t)
-    (c-basic-offset             . 0)
-    (c-comment-only-line-offset . 2)
-
-    ;; Brace rules
-    (c-hanging-braces-alist     . ((defun-open after)
-                                   (defun-close before after)
-                                   (substatement-open)
-                                   (brace-list-open)))
-
-    (c-cleanup-list             . (scope-operator
-                                   empty-defun-braces
-                                   defun-close-semi))
-    (c-offsets-alist
-     (substatement-open . -2)
-     (block-open        . -2)
-     (case-label        . 2)
-     (arglist-close     . c-lineup-arglist)))
-
-  "My custom C style: GNU-ish defuns with K&R-ish control braces.")
-
+(add-to-list 'load-path "~/.emacs.d/personal")
 (use-package cc-mode
     :ensure nil
-    :config
-    (c-add-style "user" my-c-style)
+    :init
+    (require 'netbsd)
+    :mode 
+    ("\\.[ch]\\'" . c-mode)
     :hook
-    (c-mode . (lambda ()
-            (setq c-default-style "user"
-				    indent-tabs-mode nil
-                    tab-width 4))))
+    ((c-mode . netbsd-knf-c-mode-hook)
+     (c++-mode . netbsd-knf-c-mode-hook)
+     (c-mode-common . company-mode)))
 
 ;; Perl
 (use-package cperl-mode
