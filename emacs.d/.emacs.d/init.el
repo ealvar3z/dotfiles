@@ -641,15 +641,7 @@
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
- '(package-selected-packages
-   '(ace-link company-go counsel-dash devdocs dired-open elpy evil-args
-              evil-collection evil-commentary evil-easymotion
-              evil-escape evil-exchange evil-indent-plus evil-lion
-              evil-markdown evil-matchit evil-numbers evil-org
-              evil-snipe evil-surround evil-textobj-anyblock
-              evil-visualstar eww-lnum general helpful info-colors
-              ivy-rich julia-mode julia-repl lsp-ui magit org-ref
-              org-roam projectile))
+ '(package-selected-packages nil)
  '(warning-suppress-log-types '((use-package))))
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
