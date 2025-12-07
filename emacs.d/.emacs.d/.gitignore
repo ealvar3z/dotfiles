@@ -4,6 +4,7 @@
 .DS_Store
 *.db
 *.elc
+*.eld
 /recentf
 /saveplace
 /savehist
