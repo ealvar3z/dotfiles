@@ -676,6 +676,7 @@ This may use the network, but only when called."
     "tt"  '(eax/open-vterm-bottom :which-key "open terminal")
     "tc"  '(compile :which-key "open compilation")))
 
+
 (provide 'init)
 ;;; init.el ends here
 (custom-set-variables
