@@ -96,15 +96,50 @@ augroup c_netbsd
 augroup END
 
 # =========================
+# Go / Python settings
+# =========================
+def SetGo(): void
+  setlocal noexpandtab
+  setlocal tabstop=8
+  setlocal shiftwidth=8
+  setlocal softtabstop=8
+  setlocal textwidth=0
+enddef
+
+def SetGoMakeprg(): void
+  setlocal makeprg=go\ test\ ./...
+enddef
+
+def SetPython(): void
+  setlocal expandtab
+  setlocal tabstop=4
+  setlocal shiftwidth=4
+  setlocal softtabstop=4
+  setlocal textwidth=88
+  setlocal colorcolumn=+1
+enddef
+
+def SetPythonMakeprg(): void
+  setlocal makeprg=python3\ %
+enddef
+
+augroup go_python
+  autocmd!
+  autocmd FileType go SetGo()
+  autocmd FileType go SetGoMakeprg()
+  autocmd FileType python SetPython()
+  autocmd FileType python SetPythonMakeprg()
+augroup END
+
+# =========================
 # Quickfix workflow
 # =========================
 nnoremap <leader>q :copen<CR>
 nnoremap <leader>Q :cclose<CR>
-nnoremap ]q :cnext<CR>
-nnoremap [q :cprev<CR>
-nnoremap ]Q :clast<CR>
-nnoremap [Q :cfirst<CR>
+nnoremap ,n :cnext<CR>
+nnoremap ,p :cprev<CR>
+nnoremap ,0 :cfirst<CR>
+nnoremap ,$ :clast<CR>
 
 # build + open quickfix
 nnoremap <leader>m :silent make \| copen<CR>
-
