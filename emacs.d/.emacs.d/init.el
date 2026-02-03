@@ -24,8 +24,14 @@
 (setq package-enable-at-startup nil)
 (package-initialize)
 
+<<<<<<< HEAD
 ;; Absolutely do NOT auto-install anything.
 (setq use-package-always-ensure nil)
+=======
+;; Install use-package if not already installed
+(unless (package-installed-p 'use-package)
+  (package-install 'use-package))
+>>>>>>> 789707a (update init.el)
 
 ;; Load use-package if present; otherwise continue with core Emacs.
 (unless (require 'use-package nil 'noerror)
@@ -86,8 +92,89 @@ This may use the network, but only when called."
 (menu-bar-mode -1)
 (electric-pair-mode 1)
 (set-fringe-mode 10)
+<<<<<<< HEAD
 (column-number-mode 1)
 (global-display-line-numbers-mode 1)
+=======
+(column-number-mode)
+(global-display-line-numbers-mode t)
+(setq-default indent-tabs-mode nil)
+(setq-default tab-width 4)
+(setq make-backup-files nil)
+(setq auto-save-default nil)
+(setq create-lockfiles nil)
+(setq fontaine-latest-state-file
+      (locate-user-emacs-file "fontaine-latest-state.eld"))
+
+;; <https://github.com/protesilaos/aporetic>.
+(setq fontaine-presets
+      '((regular
+         :default-family "Aporetic Serif Mono"
+         :default-height 100
+         :variable-pitch-family "Aporetic Sans")
+        (medium
+         :default-weight semilight
+         :default-height 115
+         :bold-weight extrabold)
+        (large
+         :inherit medium
+         :default-height 150)
+        (presentation
+         :default-height 180)
+        (t
+         ;; <https://protesilaos.com/emacs/fontaine>.
+         :default-family "Aporetic Sans Mono"
+         :default-weight regular
+         :default-height 100
+
+         :fixed-pitch-family nil 
+         :fixed-pitch-weight nil
+         :fixed-pitch-height 1.0
+
+         :fixed-pitch-serif-family nil
+         :fixed-pitch-serif-weight nil
+         :fixed-pitch-serif-height 1.0
+
+         :variable-pitch-family "Aporetic Serif"
+         :variable-pitch-weight nil
+         :variable-pitch-height 1.0
+
+         :mode-line-active-family nil
+         :mode-line-active-weight nil
+         :mode-line-active-height 0.9
+
+         :mode-line-inactive-family nil
+         :mode-line-inactive-weight nil
+         :mode-line-inactive-height 0.9
+
+         :header-line-family nil
+         :header-line-weight nil
+         :header-line-height 0.9
+
+         :line-number-family nil
+         :line-number-weight nil
+         :line-number-height 0.9
+
+         :tab-bar-family nil
+         :tab-bar-weight nil
+         :tab-bar-height 1.0
+
+         :tab-line-family nil
+         :tab-line-weight nil
+         :tab-line-height 1.0
+
+         :bold-family nil
+         :bold-weight bold
+
+         :italic-family nil
+         :italic-slant italic
+
+         :line-spacing nil)))
+
+(fontaine-set-preset (or (fontaine-restore-latest-preset) 'regular))
+
+(fontaine-mode 1)
+>>>>>>> 789707a (update init.el)
 
 ;; Theme
 (load-theme 'modus-vivendi t)
@@ -156,12 +243,25 @@ This may use the network, but only when called."
     :after evil
     :config (evil-collection-init))
 
+<<<<<<< HEAD
   (use-package evil-escape
     :after evil
     :init
     (setq evil-escape-key-sequence "jk"
           evil-escape-delay 0.15)
     :config (evil-escape-mode 1))
+=======
+;; Markdown mode + pandoc export
+(use-package markdown-mode
+  :ensure t
+  :mode ("\\.md\\'" . markdown-mode)
+  :init
+  ;; Associate additional extensions
+  (add-to-list 'auto-mode-alist '("\\.markdown\\'" . markdown-mode))
+  :config
+  ;; Use pandoc for HTML export
+  (setq markdown-command "pandoc -f gfm -t html5"))
+>>>>>>> 789707a (update init.el)
 
   (use-package evil-commentary
     :after evil
@@ -351,6 +451,7 @@ This may use the network, but only when called."
                   ("perl5" . cperl-mode))
     :hook (cperl-mode . my-cperl-setup)))
 
+<<<<<<< HEAD
 ;; Python (built-in)
 (when (featurep 'use-package)
   (use-package python
@@ -362,6 +463,21 @@ This may use the network, but only when called."
   (use-package elpy
     :commands (elpy-enable)
     :init (elpy-enable)))
+=======
+;; Lua
+(use-package lua-mode
+  :ensure t
+  :mode "\\.lua\\'"
+  :interpreter "luajit"
+  :config
+  (progn
+    (setq lua-indent-level 2)
+    ))
+
+(use-package elpy
+  :init
+  (elpy-enable))
+>>>>>>> 789707a (update init.el)
 
 ;; Go
 (when (featurep 'use-package)
@@ -373,12 +489,32 @@ This may use the network, but only when called."
   (use-package julia-mode
     :mode ("\\.jl\\'" . julia-mode))
 
+<<<<<<< HEAD
   (use-package julia-repl
     :after julia-mode
     :hook (julia-mode . julia-repl-mode)
     :config
     (when (fboundp 'julia-repl-set-terminal-backend)
       (julia-repl-set-terminal-backend 'vterm))))
+=======
+;; LSP support for better code intelligence
+(use-package lsp-mode
+  :commands (lsp lsp-deferred)
+  :hook ((c-mode        . lsp-deferred)
+         (c++-mode      . lsp-deferred)
+         (elisp-mode    . lsp-deferred)
+         (lua-mode      . lsp-deferred)
+         (python-mode   . lsp-deferred)
+         (go-mode       . lsp-deferred)
+         (julia-mode    . lsp-deferred))
+  :init
+  ;; keep cc-mode's indentation and your custom C
+  ;; style. clangd still provides xref/hover/completion
+  (setq lsp-enable-indentation nil
+        lsp-enable-on-type-formatting nil)
+  :config
+  (setq lsp-headerline-breadcrumb-enable nil))
+>>>>>>> 789707a (update init.el)
 
 ;;;; ------------------------------------------------------------
 ;;;; Completion / snippets
@@ -684,6 +820,7 @@ This may use the network, but only when called."
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
+<<<<<<< HEAD
  '(package-selected-packages
    '(ace-link company-go counsel-dash devdocs dired-open elpy evil-args
 	      evil-collection evil-commentary evil-easymotion
@@ -693,6 +830,13 @@ This may use the network, but only when called."
 	      eww-lnum general helpful info-colors ivy-rich julia-mode
 	      julia-repl lsp-ui magit org-ref org-roam projectile
 	      vterm)))
+=======
+ '(custom-safe-themes
+   '("f1c8202c772d1de83eda4765fe21429a528a4fb350a28394d3705fe9678ed1f9"
+     default))
+ '(package-selected-packages nil)
+ '(warning-suppress-log-types '((use-package))))
+>>>>>>> 789707a (update init.el)
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
