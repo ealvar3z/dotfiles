@@ -19,6 +19,8 @@
 alias parr='vardump'
 
 # Set environment
+export CC=clang
+export CXX=clang++
 export EDITOR='vim'
 export GREP_COLOR='1;36'
 export HISTCONTROL='ignoredups'

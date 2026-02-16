@@ -3,7 +3,7 @@ alias mkdir="mkdir -p"
 alias la="ls -a"
 alias ll="ls -al"
 alias ln="ln -v"
-alias vi="nvim"
+alias vi="vim"
 alias c="clear"
 alias x="exit"
 

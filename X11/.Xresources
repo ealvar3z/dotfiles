@@ -53,7 +53,7 @@ xterm*highlightSelection: true
 xterm*highlightTextColor: XtDefaultBackground
 
 ! Font settings
-xterm*faceName: NeoSpleenNerdFont-Medium
+xterm*faceName: UbuntuMonoNerdFontMono-Regular 
 ! xterm*faceName: Fixedsys Excelsior
 xterm*faceSize: 12
 xterm*renderFont: true

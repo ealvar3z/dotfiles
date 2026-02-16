@@ -3,9 +3,21 @@ vim9script
 # =========================
 # Core UI + behavior
 # =========================
-set nocompatible
+set nocompatible exrc secure
 filetype plugin indent on
 syntax off
+
+call plug#begin()
+	Plug 'tpope/vim-commentary'
+	Plug 'ctrlpvim/ctrlp.vim'
+	Plug 'dense-analysis/ale'
+	Plug 'ealvar3z/ed.vim'
+call plug#end()
+
+if executable('rg')
+	set grepprg=rg\ --vimgrep\ --smart-case
+	set grepformat=%f:%l:%c:%m
+endif
 
 set ruler
 set wildmenu
@@ -136,10 +148,28 @@ augroup END
 # =========================
 nnoremap <leader>q :copen<CR>
 nnoremap <leader>Q :cclose<CR>
+nnoremap <Leader>e :ALEPopulateQuickfix<CR>:sleep 100m<CR>:copen<CR>
+nnoremap <Leader>w :silent! grep! <cword> \| cwindow \| redraw!<CR>
 nnoremap ,n :cnext<CR>
 nnoremap ,p :cprev<CR>
 nnoremap ,0 :cfirst<CR>
 nnoremap ,$ :clast<CR>
+
+nnoremap <C-b> :CtrlpBuffer<CR>
+nnoremap <C-k> :ALEHover<CR>
+nnoremap <C-j> :ALEDetail<CR>
+
+nmap <silent> gr :ALEFindReferences -quickfix<CR>:sleep 100m<CR>:copen<CR>
+nmap <silent> gd :ALEGoToDefinition<CR>
+nmap <silent> re :ALERename<CR>
+
+g:ctrlp_use_caching = 0
+g:ctrlp_working_path_mode = 'ra'
+g:ale_hover_to_floating_preview = 1
+g:ale_detail_to_floating_preview = 1
+g:ale_floating_window_border = 0
+g:ale_virtualtext_cursor = 0
+g:ale_set_quickf = 1
 
 # build + open quickfix
 nnoremap <leader>m :silent make \| copen<CR>
