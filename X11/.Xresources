@@ -53,9 +53,9 @@ xterm*highlightSelection: true
 xterm*highlightTextColor: XtDefaultBackground
 
 ! Font settings
-xterm*faceName: Terminus
-xterm*faceName: Fixedsys Excelsior
-xterm*faceSize: 14
+xterm*faceName: NeoSpleenNerdFont-Medium
+! xterm*faceName: Fixedsys Excelsior
+xterm*faceSize: 12
 xterm*renderFont: true
 xterm*boldColors: false
 xterm*faceSize1: 10

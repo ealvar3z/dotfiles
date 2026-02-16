@@ -1,0 +1,270 @@
+#!/usr/bin/env bash
+#
+# bics - bash interactive configuration system
+#
+# Control bash plugins easily
+#
+# Author: Dave Eddy <dave@daveeddy.com>
+# Date: 9/24/2013
+# License: MIT
+
+BICS_VERSION='v0.1.1'
+BICS_SOURCED=()
+
+# bics initialization function, called when bics is sourced
+_() {
+	local f
+	for f in ~/.bics/plugins/*/*.bash; do
+		[[ -f $f ]] || continue
+		# shellcheck disable=SC1090
+		. "$f" && BICS_SOURCED+=("$f")
+	done
+}
+
+# bics bash completion
+_bics() {
+	local cmd=${COMP_WORDS[1]}
+	local word=${COMP_WORDS[COMP_CWORD]}
+	local words=()
+
+	case "$COMP_CWORD" in
+		1)
+			words=(
+				init install remove list
+				update self-upgrade version help
+			)
+			;;
+		*)
+			local installed=()
+			local f
+			for f in ~/.bics/plugins/*; do
+				[[ -d $f ]] || continue
+				installed+=("${f##*/}")
+			done
+
+			case "$cmd" in
+				remove|rm) words=("${installed[@]}");;
+				update|up) words=("${installed[@]}");;
+				help) words=("${installed[@]}");;
+			esac
+			;;
+	esac
+
+	local _word
+	for _word in "${words[@]}"; do
+		if [[ $_word == "$word"* || -z $word ]]; then
+			COMPREPLY+=("$_word")
+		fi
+	done
+}
+
+# check if being sourced, logic from
+# https://github.com/lhunath/scripts/blob/master/bash/bashlib/bashlib
+if (return 2>/dev/null); then
+	alias bics=~/.bics/bics
+	complete -F _bics bics
+	_
+	unset -f _
+	return
+fi
+
+# if we are here then this script is being executed interactively
+
+SOURCE_URL='https://raw.githubusercontent.com/bahamas10/bics/master/bics'
+
+usage() {
+	local rst green
+	rst=$(tput sgr0 2>/dev/null)
+	green=$(tput setaf 2 2>/dev/null)
+
+	cat <<-EOF
+	${green}bics$rst - Bash Interactive Configuration Management \
+($BICS_VERSION)
+	Usage: bics [command] [args...]
+
+	Subcommands:
+	    ${green}bics install <repo> [name]$rst
+	      install a bics plugin from a git repository
+
+	    ${green}bics list$rst
+	      list installed bics plugins (in ~/.bics/plugins)
+
+	    ${green}bics remove <name> ...$rst
+	      remove a bics plugin
+
+	    ${green}bics update [name]$rst
+	      update a bics plugin via \`git pull\`.  if 'name' is not given
+	      all plugins are updated
+
+	    ${green}bics self-upgrade$rst
+	      update \`bics\` itself to the newest version from github
+
+	    ${green}bics help [name]$rst
+	      show this message and exit.  if 'name' is given show that plugins
+	      readme in \`\$PAGER\`
+
+	    ${green}bics version$rst
+	      print the version number of bics and exit
+	EOF
+}
+
+list() {
+	local f
+	for f in ~/.bics/plugins/*; do
+		[[ -d $f ]] || continue
+		echo "> ${f##*/}"
+	done
+}
+
+init() {
+	local rst green
+	rst=$(tput sgr0 2>/dev/null)
+	green=$(tput setaf 2 2>/dev/null)
+
+	if [[ ! -d ~/.bics ]]; then
+		local dir=~/.bics/plugins/test-plugin
+		mkdir -p "$dir"
+		echo "> ${green}~/.bics$rst created"
+
+		echo '# add code here' > "$dir/test-plugin.bash"
+		echo 'this plugin does nothing' > "$dir/help.txt"
+		echo '> test-plugin created'
+	fi
+
+	self-upgrade || return $?
+
+	cat <<-EOF
+
+	${green}bics$rst - Getting Started
+	1. add $green'. ~/.bics/bics'$rst to your \`.bashrc\` file
+	2. run ${green}exec bash$rst to reload your current shell
+	3. install plugins with ${green}bics install <repo>$rst
+	4. run ${green}bics list$rst to view installed plugins
+	EOF
+}
+
+install_() {
+	if [[ -z $1 ]]; then
+		echo '> repository must not be blank' >&2
+		return 1
+	fi
+
+	cd ~/.bics/plugins || return $?
+	git clone "$@"
+}
+
+remove_() {
+	if [[ -z $1 ]]; then
+		echo '> must specify a plugin to remove' >&2
+		return 1
+	fi
+
+	local yes=false
+	local option
+	while getopts y option; do
+		case "$option" in
+			y) yes=true;;
+			*) return 1;;
+		esac
+	done
+	shift "$((OPTIND - 1))"
+
+	echo -n '> remove'
+	printf ' "%s"' "$@"
+	echo
+	local ans=n
+	if ! $yes; then
+		read -r -p '> are you sure? [y/N]: ' ans
+		[[ $ans == y ]] || return 1
+	fi
+
+	cd ~/.bics/plugins || return $?
+	rm -r "$@"
+}
+
+update() {
+	cd ~/.bics/plugins || return $?
+
+	local ret=0
+	local files=("$@")
+	if ((${#files[@]} == 0)) ; then
+		files=(*)
+	fi
+
+	local f
+	for f in "${files[@]}"; do
+		f=${f##*/}
+		[[ -z $f ]] && continue
+		if cd ~/.bics/plugins/"$f" 2>/dev/null; then
+			echo "> updating plugin '$f'"
+			git pull
+		else
+			echo "> error updating plugin '$f'" >&2
+			((ret++))
+		fi
+	done
+
+	return "$ret"
+}
+
+self-upgrade() {
+	echo -n "> getting source from $SOURCE_URL... "
+	if ! curl -L -sS -o ~/.bics/bics.temp "$SOURCE_URL"; then
+		echo 'failed to fetch!!' >&2
+		return 1
+	fi
+
+	mv ~/.bics/bics.temp ~/.bics/bics
+	chmod +x ~/.bics/bics
+	echo 'done'
+	echo "> bics $(~/.bics/bics -v) installed"
+}
+
+help_() {
+	if [[ -z $1 ]]; then
+		usage
+		return 0
+	fi
+
+	local name d f file ret=0
+	for name in "$@"; do
+		file=
+		d=~/.bics/plugins/$name
+		if [[ ! -d $d ]]; then
+			echo "> plugin $name not found" >&2
+			ret=1
+			continue
+		fi
+
+		for f in "$d"/{*.txt,*.md,readme,ReadMe,README}; do
+			if [[ -f $f ]]; then
+				file=$f
+				break
+			fi
+		done
+
+		if [[ -z $file ]]; then
+			echo "> no documentation for $name found" >&2
+			ret=1
+			continue
+		fi
+
+		${PAGER:-less} "$file"
+	done
+
+	return "$ret"
+}
+
+cmd=$1
+shift
+case "$cmd" in
+	init) init;;
+	in|install) install_ "$@";;
+	rm|remove) remove_ "$@";;
+	list|ls) list "$@";;
+	update|up) update "$@";;
+	self-upgrade|fug) self-upgrade "$@";;
+	-h|help) help_ "$@";;
+	-v|v|version) echo "$BICS_VERSION";;
+	*) usage >&2; exit 1;;
+esac

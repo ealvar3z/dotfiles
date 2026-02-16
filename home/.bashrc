@@ -13,6 +13,7 @@
 
 # Load bics, plugins found in bics-plugins
 . ~/.bics/bics || echo '> failed to load bics' >&2
+. ~/bash-path/path.bash || echo '> failed to load bash-path' >&2
 
 # use vardump instead of parr
 alias parr='vardump'
@@ -347,3 +348,4 @@ untiny() {
 path_clean
 
 true
+

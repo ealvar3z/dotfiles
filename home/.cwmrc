@@ -9,7 +9,7 @@ unbind-mouse all
 bind-key 4-Return 'xterm'
 bind-key Print "sh -c 'maim -s | xclip -selection clipboard -t image/png'"
 bind-key C-Escape "sh -c 'maim -s | xclip -selection clipboard -t image/png'"
-bind-key 4-w /usr/bin/brave --new-window
+bind-key 4-w /usr/bin/firefox --new-window
 bind-key 4-e thunar
 bind-key 4-r simplescreenrecorder
 bind-key 4-p "rofi -show drun -theme ~/.black.rasi"
@@ -23,11 +23,13 @@ bind-key XF86AudioMute "pactl set-sink-mute @DEFAULT_SINK@ toggle"
 
 bind-key 4S-q quit
 bind-key 4S-r restart
-bind-key 4-q window-close
-bind-key 4-l lock
-bind-key 4-f window-fullscreen
-bind-key 4-z window-vmaximize
-bind-key 4-x window-hmaximize
+bind-key 4-q  window-close
+bind-key 4-l  lock
+bind-key 4-f  window-fullscreen
+bind-key 4-v  window-vtile
+bind-key 4S-v  window-htile
+bind-key 4-z  window-vmaximize
+bind-key 4-x  window-hmaximize
 bind-key M-Tab window-cycle
 bind-key 4-Tab group-cycle
 
@@ -49,10 +51,10 @@ bind-key 4S-Up window-resize-up
 bind-key 4S-Down window-resize-down
 bind-key 4S-Left window-resize-left
 bind-key 4S-Right window-resize-right
-bind-key 4C-Up window-snap-up
-bind-key 4C-Down window-snap-down
-bind-key 4C-Left window-snap-left
-bind-key 4C-Right window-snap-right
+bind-key 4C-k window-snap-up
+bind-key 4C-j window-snap-down
+bind-key 4C-l window-snap-left
+bind-key 4C-h window-snap-right
 
 bind-mouse 4-1 window-move
 bind-mouse 4-3 window-resize
