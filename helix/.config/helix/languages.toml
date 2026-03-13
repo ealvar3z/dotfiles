@@ -65,6 +65,7 @@ file-types = [
 ]
 shebangs = ["sh", "bash", "dash", "zsh"]
 comment-token = "#"
+formatter = { command = "shfmt" }
 language-servers = [ "bash-language-server" ]
 indent = { tab-width = 2, unit = "  " }
 
