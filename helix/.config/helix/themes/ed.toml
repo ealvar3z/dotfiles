@@ -1,0 +1,139 @@
+"ui.background" = { bg = "black" }
+"ui.text" = "white"
+"ui.text.inactive" = "gray"
+"ui.text.info" = "gray"
+"ui.text.directory" = "light-gray"
+
+"ui.cursor" = { fg = "black", bg = "white" }
+"ui.cursor.primary" = { fg = "black", bg = "white" }
+"ui.cursor.match" = { fg = "white", bg = "gray" }
+
+"ui.selection" = { bg = "gray" }
+"ui.selection.primary" = { bg = "light-gray", fg = "black" }
+
+"ui.linenr" = "gray"
+"ui.linenr.selected" = "white"
+"ui.gutter" = { bg = "black", fg = "gray" }
+"ui.gutter.selected" = { bg = "black", fg = "white" }
+
+"ui.statusline" = { bg = "black", fg = "white" }
+"ui.statusline.inactive" = { bg = "black", fg = "gray" }
+"ui.statusline.normal" = { bg = "black", fg = "white" }
+"ui.statusline.insert" = { bg = "black", fg = "white" }
+"ui.statusline.select" = { bg = "black", fg = "white" }
+"ui.statusline.separator" = "gray"
+
+"ui.bufferline" = { bg = "black", fg = "gray" }
+"ui.bufferline.active" = { bg = "black", fg = "white" }
+"ui.bufferline.background" = { bg = "black" }
+
+"ui.popup" = { bg = "black", fg = "white" }
+"ui.popup.info" = { bg = "black", fg = "gray" }
+"ui.help" = { bg = "black", fg = "gray" }
+"ui.menu" = { bg = "black", fg = "gray" }
+"ui.menu.selected" = { bg = "gray", fg = "black" }
+"ui.menu.scroll" = { fg = "white", bg = "gray" }
+"ui.window" = "gray"
+"ui.picker.header" = { bg = "black", fg = "gray" }
+"ui.picker.header.column" = "gray"
+"ui.picker.header.column.active" = "white"
+
+"ui.virtual.whitespace" = "gray"
+"ui.virtual.indent-guide" = "gray"
+"ui.virtual.wrap" = "gray"
+"ui.virtual.ruler" = "gray"
+"ui.virtual.inlay-hint" = { fg = "gray", bg = "black", modifiers = ["italic"] }
+"ui.virtual.inlay-hint.parameter" = { fg = "gray", bg = "black", modifiers = ["italic"] }
+"ui.virtual.inlay-hint.type" = { fg = "gray", bg = "black", modifiers = ["italic"] }
+
+"ui.cursorline.primary" = { bg = "#111111" }
+"ui.cursorline.secondary" = { bg = "#0d0d0d" }
+
+"ui.highlight" = { bg = "#111111" }
+"ui.highlight.frameline" = { bg = "gray", fg = "black" }
+
+"diagnostic" = { modifiers = ["underlined"] }
+"warning" = "light-gray"
+"error" = "white"
+"info" = "gray"
+"hint" = "gray"
+"diagnostic.hint" = { fg = "gray", modifiers = ["underlined"] }
+"diagnostic.info" = { fg = "gray", modifiers = ["underlined"] }
+"diagnostic.warning" = { fg = "light-gray", modifiers = ["underlined"] }
+"diagnostic.error" = { fg = "white", modifiers = ["underlined"] }
+"diagnostic.unnecessary" = { fg = "gray", modifiers = ["dim"] }
+"diagnostic.deprecated" = { fg = "gray", modifiers = ["crossed_out"] }
+
+"comment" = { fg = "gray", modifiers = ["italic"] }
+"comment.line" = { fg = "gray", modifiers = ["italic"] }
+"comment.block" = { fg = "gray", modifiers = ["italic"] }
+"comment.documentation" = { fg = "gray", modifiers = ["italic"] }
+
+"string" = "white"
+"string.special" = "light-gray"
+"constant" = "white"
+"constant.builtin" = "light-gray"
+"constant.numeric" = "white"
+"constant.character" = "white"
+"constant.escape" = "light-gray"
+
+"variable" = "white"
+"variable.parameter" = "white"
+"variable.builtin" = "light-gray"
+"variable.member" = "light-gray"
+"variable.other.member" = "light-gray"
+
+"type" = "white"
+"type.builtin" = "light-gray"
+"type.parameter" = "light-gray"
+
+"constructor" = "white"
+"module" = "white"
+"label" = "light-gray"
+
+"function" = "white"
+"function.method" = "white"
+"function.builtin" = "light-gray"
+"function.macro" = "light-gray"
+"function.special" = "light-gray"
+
+"tag" = "white"
+"namespace" = "white"
+"special" = "light-gray"
+
+"keyword" = "white"
+"keyword.control" = "white"
+"keyword.operator" = "white"
+"keyword.directive" = "light-gray"
+"keyword.function" = "white"
+"keyword.storage" = "white"
+"keyword.storage.type" = "white"
+"keyword.storage.modifier" = "light-gray"
+
+"operator" = "white"
+
+"punctuation" = "light-gray"
+"punctuation.delimiter" = "light-gray"
+"punctuation.bracket" = "light-gray"
+"punctuation.special" = "light-gray"
+
+"attribute" = "light-gray"
+
+"markup.heading" = { fg = "white", modifiers = ["bold"] }
+"markup.bold" = { fg = "white", modifiers = ["bold"] }
+"markup.italic" = { fg = "light-gray", modifiers = ["italic"] }
+"markup.link" = "white"
+"markup.link.url" = "light-gray"
+"markup.quote" = "gray"
+"markup.raw" = "light-gray"
+"markup.list" = "light-gray"
+
+"diff.plus" = "white"
+"diff.minus" = "gray"
+"diff.delta" = "light-gray"
+
+[palette]
+black = "#000000"
+gray = "#666666"
+light-gray = "#a8a8a8"
+white = "#ffffff"

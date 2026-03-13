@@ -8,12 +8,11 @@ pushd yay-bin
 makepkg -si
 popd
 
-# readarray is a synonym for mapfile (fyi)
 readarray -t deps < dependencies.txt
 
 deps=(
   curl
-  neovim
+  evil-helix-bin
   stow
   tmux
 )
