@@ -34,3 +34,5 @@
 	name = ealvar3z
 [pull]
 	rebase = true
+[includeIf "hasconfig:remote.*.url:ssh://git@codeberg.org/**"]
+	path = ~/.gitconfig-codeberg
