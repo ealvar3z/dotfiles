@@ -1,187 +1,170 @@
 ---
 name: c-best-practices
-description: C coding style and conventions for consistency—naming, formatting, headers, and structure. Use when writing or reviewing C code, adding to C codebases, or when the user asks for C style or best practices.
+description: Practical C guidance for writing and reviewing code with emphasis on correctness, maintainability, portability, and matching the existing codebase style.
 ---
 
 # C Best Practices
 
-Style and structural conventions derived from a consistent C codebase (fype). Apply when writing or reviewing C.
+Use this skill when writing, reviewing, or refactoring C. The goal is not to impose one house style on every repository; the goal is to produce correct, maintainable C that matches the local codebase unless the user explicitly asks for a new convention.
 
 ## When to Use
 
-- Writing new C source or headers
-- Reviewing or refactoring C code
-- Aligning code with a strict, readable C style
-- Resolving style questions (naming, braces, pointers, line length)
+- Writing new C source or header files
+- Reviewing C code for bugs, safety issues, or maintainability problems
+- Refactoring C modules or APIs
+- Answering questions about C style, structure, portability, or common pitfalls
 
-## Naming Conventions
+## Core Rule
 
-| Category | Convention | Examples |
-|----------|------------|----------|
-| Types (structs, enums, typedefs) | PascalCase | `Token`, `TokenType`, `List`, `Scope` |
-| Functions | module_action (snake_case) | `token_new`, `list_add_back`, `scope_get` |
-| Variables | prefix_name (type prefix) | `p_token`, `i_val`, `c_val`, `u_id`, `b_flag` |
-| Macros/constants | UPPER_SNAKE_CASE | `TT_INTEGER`, `DEBUG_GC`, `NO_DEFAULT` |
-| Enum values | MODULE_PREFIX_NAME | `TT_STRING`, `SYM_VARIABLE` |
-| Callbacks | name_cb | `token_delete_cb`, `list_delete_cb` |
-| Static/private functions | _prefix_name | `_scope_get_hash`, `_list_copy_cb` |
+Match the repo first.
 
-Variable prefixes: `p_` pointer, `i_` int, `c_` char/string, `u_` unsigned, `b_` bool. Use consistently.
+Before making style decisions, inspect nearby C files, headers, formatting config, build flags, and lint settings. If the repository already has conventions, follow them. Only propose a new convention when:
 
-## Formatting
+- the repo has no clear convention,
+- the existing pattern is actively harmful, or
+- the user explicitly asks for a different style.
 
-- **Indentation**: 3 spaces, no tabs.
-- **Line length**: Max 80 characters.
-- **Braces**: K&R—opening brace on same line as statement/condition.
-- **Pointer asterisk**: Attach to variable, not type—`Token *p_token`, not `Token* p_token`.
-- **Return statements**: Parenthesize—`return (p_token);`
+## What to Check First
 
-## Function Definitions
+Read enough local context to answer these questions:
 
-Put return type on its own line:
+- How are files organized: one module per file, feature-based layout, or something else?
+- What naming style is already used for types, functions, macros, and locals?
+- Is there an existing formatter such as `clang-format`?
+- Which warning flags are enabled in the build?
+- Does the code target C89, C99, C11, C17, embedded C, POSIX, or platform-specific APIs?
+- Are ownership, memory allocation, and error handling patterns already established?
 
-```c
-Token*
-token_new(char *c_val, TokenType tt_cur, int i_line_nr,
-         int i_pos_nr, char *c_filename) {
-   Token *p_token = token_new_dummy();
-   // ...
-   return (p_token);
-}
-```
+## Priorities
 
-Long parameter lists: align continuation lines with the first parameter or use a single indent.
+Apply these priorities in order:
 
-## Header Guards
+1. Correctness
+2. Memory safety and lifetime clarity
+3. API clarity
+4. Maintainability
+5. Portability
+6. Style consistency
 
-Use the traditional pattern; guard name = uppercase filename with `.` → `_`:
+## Writing Guidance
 
-```c
-#ifndef TOKEN_H
-#define TOKEN_H
-// ...
-#endif
-```
+### Interfaces and Headers
 
-## File Headers
+- Keep headers minimal and stable.
+- Expose only what other translation units need.
+- Prefer forward declarations in headers when possible to reduce coupling.
+- Use include guards or `#pragma once` only if the repo already accepts it.
+- Keep public headers free of unnecessary internal macros and private helpers.
 
-Source files start with a license/attribution block. Use a distinct block comment format (e.g. `/*:*` … `*:*/`) so it can be recognized by tooling. Include at least: file path, short description, copyright, and license summary.
+### Includes
 
-## Comments
+- Follow the repo's include order if it exists.
+- Otherwise prefer: own header first in `.c` files, then system headers, then project headers.
+- Include what you use; do not rely on transitive includes.
 
-- Block comments: `/* ... */`
-- Single-line: `// comment`
-- Avoid trailing inline comments for non-trivial explanations; put notes on their own line(s) above or below.
+### Naming
 
-## Struct Formatting
+- Reuse the naming scheme already present in the codebase.
+- Favor descriptive names over abbreviation-heavy names unless the domain already uses them.
+- Make macro names distinctive and scoped to the module to avoid collisions.
+- Reserve leading underscores and double underscores for the implementation/compiler; do not invent identifiers with those forms.
 
-- **One member per line**; indent members with 3 spaces inside the brace block.
-- **Self-referential structs**: give the struct a tag with trailing underscore, typedef to PascalCase:
-  ```c
-  typedef struct ListElem_ {
-     struct ListElem_ *p_next;
-     struct ListElem_ *p_prev;
-     void *p_val;
-  } ListElem;
-  ```
-- **Non–self-referential structs**: use anonymous struct: `typedef struct { ... } TypeName;`
-- **Order in header**: define element/helper structs first, then the main container/type, then iterator or state structs. Use the same type-prefix for member names (`p_`, `i_`, etc.).
-- **Internal-only structs** (used only in .c): define them in the .c file, not in the header; name with leading underscore or module prefix (e.g. `_Garbage`, `OpEntry`).
+### Types and Data
 
-## One Module per File
+- Prefer `size_t` for sizes and indexes into object sizes.
+- Use fixed-width integer types when bit width matters.
+- Use `bool` from `<stdbool.h>` when the project standard allows it.
+- Keep struct invariants simple and document ownership of pointer fields when it is not obvious.
+- Avoid exposing struct internals publicly unless callers must manipulate fields directly.
 
-- **One logical “class” (module) per file pair**: `foo.h` + `foo.c` for the main type and everything that belongs to it.
-- **File named after the main type**: `list.h`/`list.c` for List, `token.h`/`token.c` for Token.
-- **Related types in the same file**: the main type, its element/node type (e.g. `ListElem`), and any iterator or state type (e.g. `ListIterator`, `ListIteratorState`) live in the same header and implementation. Do not split each type into its own file.
-- **Enums** that are part of the module (e.g. `TokenType`, `HASH_OP`) stay in that module’s header.
+### Functions
 
-## new_ / delete Pattern
+- Keep functions small enough to read in one pass.
+- Give each function one clear responsibility.
+- Make internal helpers `static`.
+- Prefer explicit parameters over hidden global state.
+- Document ownership transfer, mutability, and error behavior for non-trivial APIs.
 
-- **Constructor**: provide `Type *type_new(...)` that allocates and initializes. Variants as needed: `type_new()`, `type_new_size(int)`, `type_new_copy(Type *)`, `type_new_dummy()`.
-- **Destructor**: provide `void type_delete(Type *p_type)` (or `type_clear` when only clearing contents). Always pair every `_new` with a corresponding `_delete`.
-- **Sub-types in the same module** get their own new/delete with a consistent prefix:
-  - Element/node: `ListElem *listelem_new()`, `void stackelem_...` (if exposed).
-  - Iterator: `ListIterator *listiterator_new(List *p_list)`, `void listiterator_delete(ListIterator *p_iter)`.
-- **Callback-style destructor**: when the type is passed as `void*` to a generic callback (e.g. list iterate-and-free), provide `void type_delete_cb(void *p_void)` that casts and calls `type_delete`.
+### Memory and Ownership
 
-## Iterator Pattern
+- Make allocation and free paths easy to trace.
+- On failure paths, clean up in the reverse order of acquisition.
+- Use a single cleanup path with `goto cleanup` when a function has multiple owned resources.
+- Initialize variables before use; prefer zero-initialization when it matches the type semantics.
+- After `free`, only null out the pointer when that prevents a real reuse bug or matches repo practice.
 
-- **Create/destroy**: `TypeIterator *typeiterator_new(Container *p_container)`, `void typeiterator_delete(TypeIterator *p_iter)`.
-- **Traversal**: `void *typeiterator_next(TypeIterator *p_iter)`, `_Bool typeiterator_has_next(TypeIterator *p_iter)`. Add `typeiterator_current`, `typeiterator_prev`, etc. as needed.
-- Iterator type and its functions live in the same module as the container (same .h/.c).
+### Error Handling
 
-## Callbacks (_cb)
+- Check return values from allocations, I/O, parsing, locking, and system calls.
+- Propagate errors with enough context to debug them.
+- Prefer consistent error conventions within a module: `int` status, enum status, or `NULL` plus diagnostics.
+- Do not hide recoverable errors behind `assert`.
+- Use `assert` for programmer invariants, not runtime input validation.
 
-- Any function that is used as a callback and takes `void*` (or `void*, void*`, etc.) should be suffixed with `_cb`: e.g. `list_delete_cb`, `token_print_cb`, `reference_delete_cb`. This marks the signature as callback-compatible.
+### Control Flow
 
-## Header Layout Order
+- Keep branching shallow where practical.
+- Prefer early returns for invalid input and guard conditions when that improves clarity.
+- In `switch` statements, handle each enumerated case intentionally and comment on fallthrough when used.
+- Avoid clever macro control flow when a normal function is clearer.
 
-1. Header guard
-2. `#include` (system then project/local)
-3. Macros and accessor macros for the type
-4. Enums (if any)
-5. Struct typedefs (element/helper, then main type, then iterator/state)
-6. Function declarations: `_new` / `_delete` first, then the rest (grouped logically)
+### Macros
 
-Optional: close with `#endif /* GUARD_H */` for clarity.
+- Prefer `static inline` functions over function-like macros when type safety matters.
+- Parenthesize macro parameters and the full expansion.
+- Avoid macros with hidden side effects or multiple evaluation of arguments.
+- Keep multi-line macros rare and obvious.
 
-## Accessors and Macros
+### Concurrency and Signals
 
-- **Naming**: `module_get_field(obj)`, `module_set_field(obj, val)` (e.g. `token_get_val`, `symbol_set_val`). Use macros in the header for trivial access; use functions for non-trivial logic.
-- Simple accessors: `list_first(l)`, `hash_get_cur_size(hash)`. Keep macros side-effect-free and short.
+- Be explicit about thread-safety assumptions.
+- Protect shared mutable state consistently.
+- In signal handlers, call only async-signal-safe functions.
+- Do not treat `volatile` as a synchronization primitive.
 
-## Switch Statements
+### Portability
 
-- Put `switch (x) {` and each `case Y:` on its own line; indent case bodies with 3 spaces.
-- When all enum cases are handled and no default is intended, use a sentinel at the end so the compiler is satisfied: `NO_DEFAULT;` (e.g. `#define NO_DEFAULT default: if (0)`). Then close with `}`.
-- Use `case Y: { ... }` when a case needs block scope (e.g. declarations). Use `break` or `return` in each case as appropriate.
-- Optional: for simple case/return pairs, a local macro can reduce repetition: `#define CASE(t,r) case t: return r;`
+- Avoid assuming pointer size, integer size, endianness, or struct packing.
+- Be careful with signed/unsigned conversions.
+- Use the correct format specifiers for the actual type.
+- Distinguish POSIX-only code from portable ISO C code.
 
-## Error Handling
+## Review Checklist
 
-- **Fatal errors**: Use a single `ERROR(...)`-style macro that prints the message, file, and line, then exits (e.g. `exit(1)`). Use for allocation failures or impossible states.
-- **Recoverable failure**: Use a return-code type (e.g. `RETCODE`: `RET_OK`, `RET_ERROR`, `RET_NO_SPACE`) for functions that can fail; document return values. Check and propagate in callers.
+When reviewing C code, look for these first:
 
-## Include Order
+- buffer overflows, off-by-one errors, and unchecked lengths
+- use-after-free, double-free, leaks, and unclear ownership
+- missing error checks or inconsistent error propagation
+- integer truncation, overflow, signedness bugs, and bad format strings
+- null dereferences and invalid lifetime assumptions
+- hidden global state and non-reentrant helpers
+- header coupling, missing `static`, and overexposed internals
+- macros that should be functions
+- style changes that break local consistency without benefit
 
-- **In .c**: Own header first (`#include "module.h"`), blank line, then system includes (`<...>`), then project/local includes (`"..."`). Group logically if many.
-- **In .h**: After guard, system includes then project includes. Only include what the header needs for its declarations.
+## Editing Rules
 
-## Source File (.c) Layout
+- Preserve the repo's existing formatting unless the task is specifically to reformat.
+- Do not rename public APIs casually.
+- Avoid mixing behavioral changes with broad style churn.
+- If you introduce a new pattern, use it consistently within the touched area.
+- Add brief comments only where they clarify invariants, ownership, or non-obvious control flow.
 
-1. License/header block
-2. `#include "module.h"` then other includes
-3. Optional: local `#define` macros used only in this file (e.g. helpers, sentinels)
-4. Optional: forward declarations of static and non-static functions used before definition
-5. Function definitions (public then static, or logical order)
+## Verification
 
-## Shared Types
+After changes, do the strongest verification the repo supports:
 
-- Cross-module enums (e.g. `TYPE`, `RETCODE`) and shared constants belong in a common header (e.g. `types.h`, `defines.h`). Include that header where needed; avoid redefining in multiple modules.
+- run the relevant build
+- run focused tests
+- enable warnings if practical
+- mention any checks you could not run
 
-## Globals
+## Output Guidance
 
-- Use sparingly. Prefer passing context (e.g. `Interpret *p_interpret`) over file-scope globals.
-- Name file-scope globals with `UPPER_SNAKE` or a leading underscore for “module private” (e.g. `TOKEN_ID_COUNTER`, `LIST_GARBAGE`).
+When using this skill in a review or recommendation:
 
-## Multi-line Macros
-
-- Use backslash continuation; indent continuation lines (e.g. tab or 3 spaces). Parenthesize arguments and the whole expansion to avoid precedence bugs.
-
-## Quick Checklist
-
-- [ ] Types PascalCase, functions/variables snake_case with prefixes
-- [ ] 3-space indent, 80-char lines, K&R braces
-- [ ] Pointer asterisk on variable name
-- [ ] Return type on own line; parenthesized return values
-- [ ] Header guards UPPERCASE from filename
-- [ ] Static/private functions prefixed with `_`
-- [ ] Callbacks (void* used as callback) suffixed with `_cb`
-- [ ] Structs: one member per line; self-ref use `struct Name_` tag
-- [ ] One module per file: foo.h/foo.c for main type + elem + iterator
-- [ ] Every type has `type_new` and `type_delete`; iterators have `typeiterator_new`/`_delete`
-- [ ] Header order: guard, includes, macros, enums, structs, new/delete then rest
-- [ ] Accessors: `module_get_*` / `module_set_*`; switches use `NO_DEFAULT` when exhaustive
-- [ ] Fatal errors via `ERROR(...)`; recoverable via RETCODE or documented return
-- [ ] .c includes: own header first, then system, then project; optional forward decls
-- [ ] Shared enums in one header; globals minimal and named UPPER or _prefix
+- lead with correctness and safety findings
+- distinguish repo-specific style from general C best practice
+- explain tradeoffs when suggesting API or ownership changes
+- keep advice concrete and tied to the code under discussion
