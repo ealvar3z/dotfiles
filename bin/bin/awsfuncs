@@ -691,7 +691,7 @@ alias aws-debian-arm='launchInstance ami-0786f71ee78232d2c t4g.small'
 # https://omniosce.org/setup/aws
 # r151044
 # needs t3.micro; log in as "omnios"
-alias aws-omnios='launchInstance ami-0669dd7b1ff900fcc'
+alias aws-omnios='launchInstance ami-0242bbd23361d20e2'
 
 # https://fedoraproject.org/cloud/download#cloud_launch
 # Log in as "fedora".
