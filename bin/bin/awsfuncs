@@ -127,7 +127,7 @@ instanceId() {
 isEc2Hostname() {
 	local hname="${1}"
 
-	echo "${hname}" | egrep -q "^(ec2-.*amazonaws.com)|(.*.ip.aws)$"
+	echo "${hname}" | grep -E -q "^(ec2-.*amazonaws.com)|(.*.ip.aws)$"
 }
 
 # After we start an instance, we have to wait for it
