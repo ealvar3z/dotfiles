@@ -1,0 +1,36 @@
+*customization: -color
+
+XTerm*faceName: Luxi Mono
+XTerm*faceSize: 11
+XTerm*renderFont: true
+
+XTerm*foreground: black
+XTerm*background: rgb:f8/f7/dc
+XTerm*cursorColor: rgb:00/55/88
+XTerm*pointerColor: black
+XTerm*pointerColorBackground: rgb:f8/f7/dc
+XTerm*highlightColor: rgb:c8/e6/ff
+XTerm*highlightTextColor: black
+
+XTerm*vt100*internalBorder: 10
+XTerm*scrollBar: false
+XTerm*rightScrollBar: false
+XTerm*saveLines: 2000
+XTerm*vt100*colorMode: true
+
+XTerm*color0: rgb:20/20/20
+XTerm*color1: rgb:a0/30/30
+XTerm*color2: rgb:30/70/30
+XTerm*color3: rgb:90/70/20
+XTerm*color4: rgb:00/55/88
+XTerm*color5: rgb:70/50/80
+XTerm*color6: rgb:00/66/66
+XTerm*color7: rgb:e8/e0/c8
+XTerm*color8: rgb:60/60/60
+XTerm*color9: rgb:c0/40/40
+XTerm*color10: rgb:40/88/40
+XTerm*color11: rgb:b0/88/30
+XTerm*color12: rgb:00/77/aa
+XTerm*color13: rgb:88/66/99
+XTerm*color14: rgb:00/88/88
+XTerm*color15: rgb:ff/fc/e8

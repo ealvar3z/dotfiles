@@ -1,11 +1,10 @@
 export LANG=en_US.UTF-8
-export ENV=$HOME/.kshrc
-xrdb -merge $HOME/.Xresources &
-xsetroot -solid black &
+
+xrdb -merge "$HOME/.Xresources"
+xsetroot -solid grey80
+xset b off
 xidle &
 xclock -d -twentyfour &
-xset b off
-setxkbmap -option caps:ctrl_escape &
-xterm -bg black -fg white +sb &
+xterm &
 
-exec cwm
+exec fvwm

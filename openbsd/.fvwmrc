@@ -1,0 +1,33 @@
+DeskTopSize 1x1
+ClickTime 250
+ColormapFocus FollowsFocus
+DefaultColors black grey80
+HilightColor black SteelBlue3
+TitleStyle LeftJustified Height 20
+TitleStyle ActiveUp Solid SteelBlue3 -- Flat
+TitleStyle Inactive Solid grey65 -- Flat
+ButtonStyle All -- Flat
+BorderStyle Simple -- NoInset
+
+MenuStyle * FVWM, Foreground black, Background grey82, Greyed grey55
+MenuStyle * HilightBack grey72, ActiveFore black, Hilight3DOff
+MenuStyle * PopupOffset 0 100, TitleWarpOff, SeparatorsShort
+MenuStyle * MenuFace Solid grey82
+
+Style "*" Color black/grey75, BorderWidth 4, HandleWidth 4
+Style "*" IconBox -80x200-1-1, IconFill bottom right
+Style "xterm" Color black/grey78
+Style "XClock" NoTitle, Sticky, WindowListSkip
+
+AddToMenu WindowOps "Window Ops" Title
++ "Xterm" Exec exec xterm
++ "Restart FVWM" Restart
++ "Quit Session" Quit
+
+Mouse 1 R A Menu WindowOps Nop
+Mouse 1 1 A Move
+Mouse 3 1 A Resize
+
+Key Return A M Exec exec xterm
+Key Tab A M WindowList "Prev FlipFocus"
+Key Tab A 4 Desk 1 0 0 3
