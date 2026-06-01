@@ -347,6 +347,8 @@ untiny() {
 . /etc/bash/bash_completion 2>/dev/null ||
 	. ~/.bash_completion 2>/dev/null
 
+. /usr/local/share/bash-completion/bash_completion
+
 path_clean
 
 true

@@ -17,16 +17,17 @@ MenuStyle * MenuFace Solid grey82
 Style "*" Color black/grey75, BorderWidth 4, HandleWidth 4
 Style "*" IconBox -80x200-1-1, IconFill bottom right
 Style "xterm" Color black/grey78
-Style "XClock" NoTitle, Sticky, WindowListSkip
 
 AddToMenu WindowOps "Window Ops" Title
 + "Xterm" Exec exec xterm
++ "Chrome" Exec exec /usr/local/bin/chrome
 + "Restart FVWM" Restart
 + "Quit Session" Quit
 
 Mouse 1 R A Menu WindowOps Nop
-Mouse 1 1 A Move
-Mouse 3 1 A Resize
+Mouse 1 F N Resize
+Mouse 1 A 4 Move
+Mouse 3 A 4 Resize
 
 Key Return A M Exec exec xterm
 Key Tab A M WindowList "Prev FlipFocus"

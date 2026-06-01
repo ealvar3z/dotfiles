@@ -7,11 +7,17 @@ set nocompatible exrc secure
 filetype plugin indent on
 syntax off
 
+if !filereadable(expand('~/.vim/autoload/plug.vim'))
+  silent! call mkdir(expand('~/.vim/autoload'), 'p')
+  silent execute '!/usr/local/bin/curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+endif
+
 call plug#begin()
 	Plug 'tpope/vim-commentary'
 	Plug 'ctrlpvim/ctrlp.vim'
 	Plug 'dense-analysis/ale'
-	Plug 'ealvar3z/ed.vim'
+	# Plug 'ealvar3z/ed.vim'
 call plug#end()
 
 if executable('rg')
@@ -35,7 +41,7 @@ if exists('+termguicolors')
   set termguicolors
 endif
 
-colorscheme ed
+# colorscheme ed
 
 # =========================
 # Search / replace UX

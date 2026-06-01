@@ -5,10 +5,10 @@ XTerm*faceSize: 11
 XTerm*renderFont: true
 
 XTerm*foreground: black
-XTerm*background: rgb:f8/f7/dc
+XTerm*background: rgb:ff/f8/cf
 XTerm*cursorColor: rgb:00/55/88
 XTerm*pointerColor: black
-XTerm*pointerColorBackground: rgb:f8/f7/dc
+XTerm*pointerColorBackground: rgb:ff/f8/cf
 XTerm*highlightColor: rgb:c8/e6/ff
 XTerm*highlightTextColor: black
 
@@ -33,4 +33,4 @@ XTerm*color11: rgb:b0/88/30
 XTerm*color12: rgb:00/77/aa
 XTerm*color13: rgb:88/66/99
 XTerm*color14: rgb:00/88/88
-XTerm*color15: rgb:ff/fc/e8
+XTerm*color15: rgb:ff/f8/e0

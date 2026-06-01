@@ -1,0 +1,322 @@
+Arch Linux + FVWM-min (p9) checklist
+====================================
+
+Goal
+----
+
+Fresh Arch install to a working X11 environment using:
+
+* `xdm`
+* `xterm`
+* `chromium`
+* `tmux`
+* `vim`
+* `fvwm3`
+* `~/repos/fvwm-min` with the `p9` style
+
+This assumes:
+
+* UEFI boot
+* one disk
+* wired network or Wi-Fi via `iwd`
+* user account name `eax`
+
+Adjust device names, time zone, locale, and microcode package as needed.
+
+References
+----------
+
+This plan is based on:
+
+* ArchWiki Installation guide
+* ArchWiki Xorg
+* ArchWiki XDM
+* ArchWiki FVWM
+* Arch packages for `fvwm3`
+* local repo: `~/repos/fvwm-min`
+
+Log in on tty as `eax`.
+
+Phase post-install: Install X11 & desktop pkgs
+----------------------------------------------
+
+Log in as root or use `sudo`:
+
+```sh
+sudo pacman -Syu
+sudo pacman -S \
+  xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xdm \
+  xterm chromium \
+  fvwm3 \
+  ripgrep
+```
+
+Optional tools:
+
+```sh
+sudo pacman -S xorg-xfontsel
+```
+
+Notes:
+
+* Use `fvwm3`, not legacy `fvwm`, unless you deliberately want the old branch.
+* Arch ships `fvwm3` in `extra`.
+
+Phase 9: Enable XDM
+-------------------
+
+Enable it:
+
+```sh
+sudo systemctl enable xdm.service
+```
+
+XDM uses `~/.xsession` directly. It does not provide a session menu like
+modern display managers.
+
+Phase 10: Install your user config files
+----------------------------------------
+
+Clone your dotfiles if not already present:
+
+```sh
+mkdir -p ~/repos
+cd ~/repos
+git clone YOUR_DOTFILES_REPO_URL dotfiles
+```
+
+Clone `fvwm-min`:
+
+```sh
+git clone git@github.com:yaoguai/fvwm-min.git ~/repos/fvwm-min
+```
+
+If you already have local copies, skip the clones.
+
+Phase 11: Install `fvwm-min`
+----------------------------
+
+Build and install the repo into `~/.fvwm`:
+
+```sh
+cd ~/repos/fvwm-min
+make
+make install HOME=/home/eax
+```
+
+Select the Plan 9 style:
+
+```sh
+ln -sfn styles/base/p9 ~/.fvwm/mystyle
+```
+
+or:
+
+```sh
+~/.fvwm/set-style p9
+```
+
+Phase 12: Patch `fvwm-min` for your environment
+-----------------------------------------------
+
+The repo defaults are sensible, but they are not your environment yet.
+
+Edit `~/.fvwm/config` and make these adjustments:
+
+1. Terminal menu entry:
+
+   Change generic launcher to:
+
+   ```text
+   Exec exec xterm
+   ```
+
+2. Browser menu entry:
+
+   Add:
+
+   ```text
+   + "&Chrome"           Exec exec chromium
+   ```
+
+3. Remove `xclock` if you do not want it.
+
+4. Keep or change the default keyboard model:
+
+   Repo defaults include:
+
+   * `Ctrl+Alt+T` terminal
+   * `Ctrl+Alt+M` root menu
+   * virtual navigation with `Ctrl+Alt+Up/Down`
+
+5. Keep in mind:
+
+   * the repo README says six virtual desktops
+   * the config actually uses `DeskTopSize 1x6`
+   * that is six pages in one desk, not six separate desks
+
+6. If you want your previous OpenBSD behavior, re-add custom bindings after
+   first boot only once the base config is working.
+
+Phase 13: Create `~/.xsession`
+------------------------------
+
+Create `~/.xsession`:
+
+```sh
+cat > ~/.xsession <<'EOF'
+#!/bin/sh
+export LANG=en_US.UTF-8
+
+xrdb -merge "$HOME/.Xresources"
+xset b off
+setxkbmap -option caps:ctrl_escape &
+xterm &
+
+exec fvwm3 -f "$HOME/.fvwm/config"
+EOF
+chmod +x ~/.xsession
+```
+
+If your Arch package provides the binary as `fvwm` instead of `fvwm3`,
+adjust this line accordingly. For the current Arch `fvwm3` package, use
+`fvwm3`.
+
+Phase 14: Install your X resources
+----------------------------------
+
+Install your known-good `~/.Xresources` for xterm:
+
+```text
+*customization: -color
+
+XTerm*faceName: Luxi Mono
+XTerm*faceSize: 11
+XTerm*renderFont: true
+
+XTerm*foreground: black
+XTerm*background: rgb:ff/f8/cf
+XTerm*cursorColor: rgb:00/55/88
+XTerm*pointerColor: black
+XTerm*pointerColorBackground: rgb:ff/f8/cf
+XTerm*highlightColor: rgb:c8/e6/ff
+XTerm*highlightTextColor: black
+
+XTerm*vt100*internalBorder: 10
+XTerm*scrollBar: false
+XTerm*rightScrollBar: false
+XTerm*saveLines: 2000
+XTerm*vt100*colorMode: true
+```
+
+Add the rest of your palette if desired.
+
+Phase 15: Install tmux config
+-----------------------------
+
+Install `~/.tmux.conf`, but fix the clipboard binding for Linux/X11.
+
+Recommended minimal version:
+
+```tmux
+set -g default-terminal "xterm-256color"
+set -g prefix C-Space
+set-window-option -g automatic-rename on
+set-window-option -g mode-keys vi
+set-option -g set-titles on
+set-option -sg escape-time 10
+set -g mouse on
+set -g base-index 1
+set-window-option -g pane-base-index 1
+set -g renumber-windows on
+set -g set-clipboard on
+
+bind -T copy-mode-vi y send-keys -X copy-pipe-and-cancel "xclip -selection clipboard -in"
+```
+
+Important:
+
+* with tmux mouse mode enabled, plain mouse drag inside tmux goes to tmux
+* use `Shift` while dragging in xterm if you want native xterm selection
+
+Phase 17: First graphical login
+-------------------------------
+
+Reboot:
+
+```sh
+sudo reboot
+```
+
+At the `xdm` login screen:
+
+1. log in as `eax`
+2. confirm X starts
+3. confirm `fvwm3` loads `~/.fvwm/config`
+4. confirm the `p9` style is active
+
+Phase 18: Post-login validation
+-------------------------------
+
+Check these in order:
+
+1. `xterm` opens on login
+2. root menu appears
+3. `chromium` launches from menu
+4. pager appears
+5. window move/resize works
+6. `tmux` launches
+7. `Shift`-drag works for xterm selection inside tmux
+8. `y` in tmux copy-mode copies to X clipboard via `xclip`
+9. Vim loads `colorscheme ed` cleanly
+
+Phase 19: Known differences and likely fixes
+--------------------------------------------
+
+1. `fvwm-min` is repo-driven, not your old single-file `.fvwmrc`.
+   - Main config: `~/.fvwm/config`
+   - Style link: `~/.fvwm/mystyle`
+
+2. The repo uses its own keybindings and desktop model.
+   - Do not merge your old custom bindings until the clean base works.
+
+3. If a module fails:
+   - check whether Arch’s `fvwm3` package ships it
+   - comment only the failing module line first
+
+4. If XDM logs in and immediately exits:
+   - verify `~/.xsession` exists
+   - verify it is executable
+   - inspect `~/.xsession-errors` if present
+
+5. If xterm colors do not apply:
+   - verify `xrdb -merge "$HOME/.Xresources"` is in `~/.xsession`
+
+6. If tmux mouse feels “broken”:
+   - this is expected with `set -g mouse on`
+   - use `Shift` for xterm-native selection
+
+After reboot:
+
+```sh
+sudo pacman -Syu
+sudo pacman -S xorg-server xorg-xinit xorg-xsetroot xorg-setxkbmap xorg-xdm xterm chromium fvwm3 ripgrep
+sudo systemctl enable xdm.service
+cd ~/repos/fvwm-min
+make
+make install HOME=/home/eax
+ln -sfn styles/base/p9 ~/.fvwm/mystyle
+```
+
+End state
+---------
+
+You should end up with:
+
+* Arch Linux
+* `xdm`
+* `fvwm3`
+* `fvwm-min` configuration in `~/.fvwm`
+* `p9` style selected
+* `xterm`, `chromium`, `tmux`, `vim`
+* X11 clipboard integration for tmux via `xclip`
