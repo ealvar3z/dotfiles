@@ -1,0 +1,7 @@
+#!/bin/sh
+set -eu
+
+dir="${MUSIC_DIR:-$HOME/music/yt/db}"
+
+mpv --no-video --volume=45 --shuffle --loop-playlist "$dir"
+

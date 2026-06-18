@@ -1,4 +1,4 @@
 address "irc://chat.sr.ht:6697"
 nickname "eax"
 username eax
-password-cmd /opt/homebrew/bin/rbw get senpai 
+password-cmd rbw get senpai 

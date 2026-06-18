@@ -29,6 +29,7 @@ export HISTFILESIZE=5000
 export LSCOLORS='ExGxbEaECxxEhEhBaDaCaD'
 export PAGER='less'
 export TZ='America/New_York'
+export TERMINAL=kitty
 export VISUAL='vim'
 
 # Support colors in less
@@ -47,7 +48,11 @@ export LESS_TERMCAP_ZO=$(tput ssupm)
 export LESS_TERMCAP_ZW=$(tput rsupm)
 
 # PATH
+export GOPATH="$HOME/.go"
+export GOBIN="$GOPATH/bin"
 path_add ~/bin before
+path_add "$GOBIN" after
+path_add ~/.local/bin before
 
 # Shell Options
 shopt -s cdspell
@@ -347,7 +352,7 @@ untiny() {
 . /etc/bash/bash_completion 2>/dev/null ||
 	. ~/.bash_completion 2>/dev/null
 
-. /usr/local/share/bash-completion/bash_completion
+# . /usr/local/share/bash-completion/bash_completion
 
 path_clean
 

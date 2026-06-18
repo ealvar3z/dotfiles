@@ -1,0 +1,13 @@
+#!/bin/sh
+set -eu
+
+dir="${MUSIC_DIR:-$HOME/music/yt/db}"
+mkdir -p "$dir"
+
+yt-dlp \
+  -f "ba[acodec=opus]/ba" \
+  -x --audio-format opus \
+  --embed-metadata \
+  --embed-thumbnail \
+  -o "$dir/%(title).180B.%(ext)s" \
+  "$@"

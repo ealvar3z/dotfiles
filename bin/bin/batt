@@ -1,3 +1,7 @@
 #!/bin/sh
 
-cat /sys/class/power_supply/BAT0/capacity | xargs printf "%s%%\n"
+if [ - f /sys/class/power_supply/BAT0/capacity ]; then
+	printf "%s%%\n" "100"
+else
+	cat /sys/class/power_supply/BAT0/capacity | xargs printf "%s%%\n"
+fi
