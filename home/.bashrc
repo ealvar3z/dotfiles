@@ -349,8 +349,17 @@ untiny() {
 . ~/.bashrc.local    2>/dev/null || true
 
 # load completion
-. /etc/bash/bash_completion 2>/dev/null ||
-	. ~/.bash_completion 2>/dev/null
+if [[ -r /etc/bash_completion ]]; then
+	. /etc/bash_completion
+elif [[ -r /usr/share/bash-completion/bash_completion ]]; then
+	. /usr/share/bash-completion/bash_completion
+elif [[ -r ~/.bash_completion ]]; then
+	. ~/.bash_completion
+fi
+if ! complete -p git &>/dev/null &&
+    [[ -r /usr/share/bash-completion/completions/git ]]; then
+	. /usr/share/bash-completion/completions/git
+fi
 
 # . /usr/local/share/bash-completion/bash_completion
 
@@ -358,3 +367,7 @@ path_clean
 
 true
 
+
+# >>> Codex installer >>>
+export PATH="/home/eax/.local/bin:$PATH"
+# <<< Codex installer <<<
