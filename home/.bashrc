@@ -155,7 +155,6 @@ set_prompt_colors() {
 # exit code of last process
 PS1='$(ret=$?;(($ret!=0)) && echo "\[${COLOR256[0]}\]($ret) \[${COLOR256[256]}\]")'
 
-# username (red for root)
 PS1+='\[${PROMPT_COLORS[0]}\]\[${COLOR256[257]}\]$(((UID==0)) && echo "\[${COLOR256[0]}\]")\u\[${COLOR256[256]}\] - '
 
 # zonename (global zone warning)
@@ -178,6 +177,11 @@ PS1+='\[${PROMPT_COLORS[0]}\]\n;\[${COLOR256[256]}\] '
 
 # set the theme
 set_prompt_colors 24
+
+# The selected palette begins with ANSI 24 (dark blue), which is unreadable on
+# the current terminal background.  Keep every prompt segment white instead.
+PROMPT_COLORS=("$(tput setaf 15)" "$(tput setaf 15)" "$(tput setaf 15)"
+               "$(tput setaf 15)" "$(tput setaf 15)" "$(tput setaf 15)")
 
 # Prompt command
 _prompt_command() {
@@ -367,7 +371,3 @@ path_clean
 
 true
 
-
-# >>> Codex installer >>>
-export PATH="/home/eax/.local/bin:$PATH"
-# <<< Codex installer <<<

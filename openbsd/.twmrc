@@ -1,0 +1,100 @@
+#
+# 9twm    --  A Plan9/9wm theme for twm by way of mofications to
+#	      .twmrc and .xinitrc.
+#
+#	      Version 1.0
+#
+# 	      By James Deagle       (james.deagle@yahoo.com)
+#
+#             This file is public domain. 
+#	
+#		"Dilige et quod vis fac." -Augustine of Hippo
+#
+#	      August 31, 2009
+#
+#	For best results, your .xinit should include the following:
+#
+#		xsetroot -solid gray -cursor_name draft_small
+#		xload -g 300x125+0+0 -fg purple -update 3 &
+#		twm
+# FUCKED UP BY KURT
+
+
+NoGrabServer
+DecorateTransients
+MenuFont "-adobe-helvetica-bold-r-normal--*-80-*-*-*-*-*-*"
+BorderWidth 3
+ButtonIndent 2
+MenuBorderWidth 1
+AutoRelativeResize
+NoRaiseOnMove
+OpaqueMove
+NoTitle
+NoMenuShadows
+
+
+Color
+{
+    BorderColor "cyan"
+    BorderTileBackground "cyan"
+    DefaultBackground "green"
+    DefaultForeground "black"
+    MenuBackground "white"
+    MenuBorderColor "green"
+    MenuForeground "black"
+    PointerForeground "black"
+    PointerBackground "white"
+
+}
+
+#
+# Define some useful functions for motion-based actions.
+#
+MoveDelta 1
+Function "move-or-lower" { f.move f.deltastop f.lower }
+Function "move-or-raise" { f.move f.deltastop f.raise }
+Function "move-or-iconify" { f.move f.deltastop f.iconify }
+
+Button2 = : root : f.menu "twm"
+Button3 = : root : f.menu "window"
+
+Button1 = : frame : f.resize
+Button2 = : frame : f.resize
+Button3 = : frame : f.move
+
+"l"     = m|s : all : f.exec "xlock &"
+
+menu "twm"
+{
+"Show Mgr"		f.showiconmgr
+"Hide Mgr"		f.hideiconmgr
+"Restart "		f.restart
+"Lock "			f.exec "xlock &"
+"Browser"		f.exec "firefox &"
+}
+
+menu "window"
+{
+"New"		f.exec "uxterm &"
+"Reshape"        f.resize
+"Move"           f.move
+"Delete"    	 f.delete
+"Hide"		 f.iconify
+"Quit"           f.quit
+}
+
+
+Cursors
+{
+                         Frame     "draft_small"
+                         Move      "tcross"
+                         Resize    "tcross"
+                         Menu      "draft_small"
+                         Button    "draft_small"
+                         Wait      "clock"
+                         Select    "dot"
+                         Destroy   "dot"
+}
+
+
+
