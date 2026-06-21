@@ -18,6 +18,7 @@ skills/100-go-mistakes
 skills/auditing-code-quality
 skills/beyond-solid-principles
 skills/c-best-practices
+skills/freebsd-porter
 skills/go-best-practices
 skills/increment-version-and-push
 skills/purge-file-from-git

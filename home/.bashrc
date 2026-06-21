@@ -50,8 +50,10 @@ export LESS_TERMCAP_ZW=$(tput rsupm)
 # PATH
 export GOPATH="$HOME/.go"
 export GOBIN="$GOPATH/bin"
+export CARGOBIN="$HOME/.cargo/bin"
 path_add ~/bin before
 path_add "$GOBIN" after
+path_add "$CARGOBIN" after
 path_add ~/.local/bin before
 
 # Shell Options
