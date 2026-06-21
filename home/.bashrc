@@ -63,6 +63,27 @@ shopt -s extglob
 shopt -s autocd   2>/dev/null || true
 shopt -s dirspell 2>/dev/null || true
 
+# Load bash-completion from common OS/package-manager locations.
+if ! shopt -oq posix; then
+	for bash_completion in \
+		"${HOMEBREW_PREFIX:+$HOMEBREW_PREFIX/etc/profile.d/bash_completion.sh}" \
+		"${HOMEBREW_PREFIX:+$HOMEBREW_PREFIX/share/bash-completion/bash_completion}" \
+		/usr/local/etc/profile.d/bash_completion.sh \
+		/opt/homebrew/etc/profile.d/bash_completion.sh \
+		/opt/local/etc/profile.d/bash_completion.sh \
+		/etc/bash_completion \
+		/usr/local/share/bash-completion/bash_completion \
+		/usr/share/bash-completion/bash_completion \
+		/opt/local/share/bash-completion/bash_completion \
+		/usr/pkg/share/bash-completion/bash_completion
+	do
+		[[ -r $bash_completion ]] || continue
+		. "$bash_completion"
+		break
+	done
+	unset bash_completion
+fi
+
 # Aliases
 alias ..='echo "cd .."; cd ..'
 alias c='clear'
@@ -370,4 +391,3 @@ fi
 path_clean
 
 true
-

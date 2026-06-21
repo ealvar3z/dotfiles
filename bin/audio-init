@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+
+set -u
+
+pactl_cmd=$(command -v pactl 2>/dev/null || true)
+mixer_cmd=$(command -v mixer 2>/dev/null || true)
+
+wait_for_pulse() {
+	local i
+
+	[[ -n $pactl_cmd ]] || return 1
+
+	for i in {1..20}; do
+		"$pactl_cmd" info >/dev/null 2>&1 && return 0
+		sleep 0.25
+	done
+
+	return 1
+}
+
+set_default_source() {
+	"$pactl_cmd" set-default-source oss_input.dsp0 >/dev/null 2>&1 || true
+}
+
+set_source_volumes() {
+	"$pactl_cmd" set-source-volume oss_input.dsp0 35% >/dev/null 2>&1 || true
+	"$pactl_cmd" set-source-volume oss_input.dsp3 30% >/dev/null 2>&1 || true
+	"$pactl_cmd" set-source-volume oss_input.dsp4 25% >/dev/null 2>&1 || true
+}
+
+fix_internal_mixer() {
+	[[ -n $mixer_cmd ]] || return 0
+
+	# Keep the internal codec on a mic-only capture path. Capturing "speaker"
+	# or "mix" on this host adds broadband noise to recordings.
+	"$mixer_cmd" -f /dev/mixer0 speaker=0 mix=0 mic=0.35:0.35 >/dev/null 2>&1 || true
+	"$mixer_cmd" -f /dev/mixer0 igain=0 ogain=1.0:1.0 >/dev/null 2>&1 || true
+}
+
+fix_logitech_mixer() {
+	[[ -n $mixer_cmd ]] || return 0
+
+	"$mixer_cmd" -f /dev/mixer4 mic=0.25:0.25 >/dev/null 2>&1 || true
+}
+
+main() {
+	fix_internal_mixer
+	fix_logitech_mixer
+
+	wait_for_pulse || return 0
+
+	set_default_source
+	set_source_volumes
+}
+
+main "$@"

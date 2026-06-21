@@ -9,8 +9,11 @@ syntax off
 
 if !filereadable(expand('~/.vim/autoload/plug.vim'))
   silent! call mkdir(expand('~/.vim/autoload'), 'p')
-  silent execute '!/usr/local/bin/curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-  autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  var curl = exepath('curl')
+  if !empty(curl)
+    silent execute '!' .. shellescape(curl) .. ' -fLo ' .. shellescape(expand('~/.vim/autoload/plug.vim')) .. ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
+  endif
 endif
 
 call plug#begin()
