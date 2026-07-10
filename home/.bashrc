@@ -56,6 +56,10 @@ path_add "$GOBIN" after
 path_add "$CARGOBIN" after
 path_add ~/.local/bin before
 
+if [[ -r $HOME/ports/etc/env.sh ]]; then
+	. "$HOME/ports/etc/env.sh"
+fi
+
 # Shell Options
 shopt -s cdspell
 shopt -s checkwinsize

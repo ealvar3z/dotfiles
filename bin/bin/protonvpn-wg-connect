@@ -1,0 +1,28 @@
+#!/bin/sh
+
+set -eu
+
+CONFIG="${PROTONVPN_WG_CONFIG:-$HOME/.config/protonvpn-wireguard/protonvpn.conf}"
+IFACE="${WG_INTERFACE:-wg0}"
+HELPER="${PROTONVPN_WG_HELPER:-$HOME/bin/protonvpn-wg-helper}"
+
+[ -f "$CONFIG" ] || {
+    echo "missing config: $CONFIG" >&2
+    exit 1
+}
+
+[ -x "$HELPER" ] || {
+    echo "missing helper: $HELPER" >&2
+    exit 1
+}
+
+if [ -x /usr/local/bin/doas ]; then
+    exec /usr/local/bin/doas "$HELPER" up "$CONFIG" "$IFACE"
+fi
+
+if command -v sudo >/dev/null 2>&1; then
+    exec sudo "$HELPER" up "$CONFIG" "$IFACE"
+fi
+
+echo "need doas or sudo to start WireGuard" >&2
+exit 1

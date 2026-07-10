@@ -1,0 +1,304 @@
+#!/bin/sh
+
+set -eu
+
+RESOLVCONF_BIN=/sbin/resolvconf
+
+usage() {
+    echo "usage: $0 up|down CONFIG IFACE" >&2
+    exit 64
+}
+
+die() {
+    echo "$*" >&2
+    exit 1
+}
+
+trim() {
+    printf '%s' "$1" | sed 's/^[[:space:]]*//; s/[[:space:]]*$//'
+}
+
+config_value() {
+    section=$1
+    key=$2
+    file=$3
+    awk -v want_section="$section" -v want_key="$key" '
+        function trim(s) {
+            sub(/^[[:space:]]+/, "", s)
+            sub(/[[:space:]]+$/, "", s)
+            return s
+        }
+        /^[[:space:]]*\[/ {
+            section = $0
+            gsub(/^[[:space:]]*\[/, "", section)
+            gsub(/\][[:space:]]*$/, "", section)
+            next
+        }
+        /^[[:space:]]*#/ || /^[[:space:]]*$/ { next }
+        section == want_section {
+            pos = index($0, "=")
+            if (!pos) {
+                next
+            }
+            key = trim(substr($0, 1, pos - 1))
+            value = trim(substr($0, pos + 1))
+            if (key == want_key) {
+                print value
+                exit
+            }
+        }
+    ' "$file"
+}
+
+allowed_ip_present() {
+    needle=$1
+    allowed=$2
+    printf '%s' "$allowed" | tr ',' '\n' | sed 's/^[[:space:]]*//; s/[[:space:]]*$//' | grep -Fxq "$needle"
+}
+
+endpoint_host() {
+    endpoint=$1
+    case "$endpoint" in
+        \[*\]:*)
+            host=${endpoint%\]:*}
+            printf '%s\n' "${host#\[}"
+            ;;
+        *:*)
+            printf '%s\n' "${endpoint%:*}"
+            ;;
+        *)
+            printf '%s\n' "$endpoint"
+            ;;
+    esac
+}
+
+host_is_ipv6() {
+    case "$1" in
+        *:*) return 0 ;;
+        *) return 1 ;;
+    esac
+}
+
+default_gateway_for_host() {
+    host=$1
+    if host_is_ipv6 "$host"; then
+        route -n get -inet6 default 2>/dev/null | awk '/gateway:/{print $2; exit}'
+    else
+        route -n get default 2>/dev/null | awk '/gateway:/{print $2; exit}'
+    fi
+}
+
+build_wg_conf() {
+    input=$1
+    output=$2
+    awk '
+        function trim(s) {
+            sub(/^[[:space:]]+/, "", s)
+            sub(/[[:space:]]+$/, "", s)
+            return s
+        }
+        /^[[:space:]]*\[/ {
+            section = $0
+            gsub(/^[[:space:]]*\[/, "", section)
+            gsub(/\][[:space:]]*$/, "", section)
+            print
+            next
+        }
+        /^[[:space:]]*#/ || /^[[:space:]]*$/ {
+            print
+            next
+        }
+        {
+            pos = index($0, "=")
+            if (!pos) {
+                next
+            }
+            key = trim(substr($0, 1, pos - 1))
+            if (section == "Interface" && (key == "PrivateKey" || key == "ListenPort" || key == "FwMark")) {
+                print
+            } else if (section == "Peer" && (key == "PublicKey" || key == "PresharedKey" || key == "AllowedIPs" || key == "Endpoint" || key == "PersistentKeepalive")) {
+                print
+            }
+        }
+    ' "$input" > "$output"
+}
+
+configure_addresses() {
+    addresses=$1
+    oldifs=$IFS
+    first=1
+    IFS=,
+    for cidr in $addresses; do
+        IFS=$oldifs
+        cidr=$(trim "$cidr")
+        [ -n "$cidr" ] || {
+            IFS=,
+            continue
+        }
+        case "$cidr" in
+            *:*)
+                if [ "$first" -eq 1 ]; then
+                    ifconfig "$IFACE" inet6 "$cidr"
+                    first=0
+                else
+                    ifconfig "$IFACE" inet6 "$cidr" alias
+                fi
+                ;;
+            *)
+                if [ "$first" -eq 1 ]; then
+                    ifconfig "$IFACE" inet "$cidr"
+                    first=0
+                else
+                    ifconfig "$IFACE" inet "$cidr" alias
+                fi
+                ;;
+        esac
+        IFS=,
+    done
+    IFS=$oldifs
+    ifconfig "$IFACE" up
+}
+
+add_dns() {
+    dns=$1
+    [ -n "$dns" ] || return 0
+    {
+        oldifs=$IFS
+        IFS=,
+        for ns in $dns; do
+            IFS=$oldifs
+            ns=$(trim "$ns")
+            [ -n "$ns" ] && printf 'nameserver %s\n' "$ns"
+            IFS=,
+        done
+        IFS=$oldifs
+    } | "$RESOLVCONF_BIN" -x -a "$DNS_KEY"
+}
+
+delete_dns() {
+    "$RESOLVCONF_BIN" -d "$DNS_KEY" -f >/dev/null 2>&1 || true
+}
+
+add_endpoint_route() {
+    host=$1
+    gateway=$2
+    if host_is_ipv6 "$host"; then
+        route -q -n -6 add -host "$host" "$gateway"
+    else
+        route -q -n add -host "$host" "$gateway"
+    fi
+}
+
+delete_endpoint_route() {
+    host=$1
+    if host_is_ipv6 "$host"; then
+        route -q -n -6 delete -host "$host" >/dev/null 2>&1 || true
+    else
+        route -q -n delete -host "$host" >/dev/null 2>&1 || true
+    fi
+}
+
+delete_full_tunnel_routes() {
+    if allowed_ip_present "0.0.0.0/0" "$ALLOWED_IPS"; then
+        route -q -n -4 delete 0.0.0.0/1 >/dev/null 2>&1 || true
+        route -q -n -4 delete 128.0.0.0/1 >/dev/null 2>&1 || true
+    fi
+    if allowed_ip_present "::/0" "$ALLOWED_IPS"; then
+        route -q -n -6 delete ::/1 >/dev/null 2>&1 || true
+        route -q -n -6 delete 8000::/1 >/dev/null 2>&1 || true
+    fi
+}
+
+cleanup_partial() {
+    delete_dns
+    delete_full_tunnel_routes
+    [ -n "$ENDPOINT_HOST" ] && delete_endpoint_route "$ENDPOINT_HOST"
+    ifconfig "$IFACE" destroy >/dev/null 2>&1 || true
+}
+
+up() {
+    ADDRESS=$(config_value Interface Address "$CONFIG")
+    DNS=$(config_value Interface DNS "$CONFIG")
+    ENDPOINT=$(config_value Peer Endpoint "$CONFIG")
+    ALLOWED_IPS=$(config_value Peer AllowedIPs "$CONFIG")
+    ENDPOINT_HOST=$(endpoint_host "$ENDPOINT")
+    DEFAULT_GW=$(default_gateway_for_host "$ENDPOINT_HOST")
+
+    [ -n "$ADDRESS" ] || die "missing Address in $CONFIG"
+    [ -n "$ENDPOINT" ] || die "missing Endpoint in $CONFIG"
+    [ -n "$ALLOWED_IPS" ] || die "missing AllowedIPs in $CONFIG"
+    [ -n "$DEFAULT_GW" ] || die "could not determine the current default gateway"
+
+    kldload if_wg >/dev/null 2>&1 || true
+
+    if ifconfig "$IFACE" >/dev/null 2>&1; then
+        die "$IFACE already exists; disconnect it first or set WG_INTERFACE"
+    fi
+
+    TMP_WG_CONF=$(mktemp -t protonvpn-wg.XXXXXX)
+    SUCCESS=0
+    trap 'rm -f "$TMP_WG_CONF"; [ "$SUCCESS" -eq 1 ] || cleanup_partial' EXIT HUP INT TERM
+
+    build_wg_conf "$CONFIG" "$TMP_WG_CONF"
+
+    ifconfig "$IFACE" create
+    wg setconf "$IFACE" "$TMP_WG_CONF"
+    configure_addresses "$ADDRESS"
+
+    delete_endpoint_route "$ENDPOINT_HOST"
+    add_endpoint_route "$ENDPOINT_HOST" "$DEFAULT_GW"
+
+    if allowed_ip_present "0.0.0.0/0" "$ALLOWED_IPS"; then
+        route -q -n -4 add 0.0.0.0/1 -iface "$IFACE"
+        route -q -n -4 add 128.0.0.0/1 -iface "$IFACE"
+    fi
+
+    if allowed_ip_present "::/0" "$ALLOWED_IPS"; then
+        route -q -n -6 add ::/1 -iface "$IFACE"
+        route -q -n -6 add 8000::/1 -iface "$IFACE"
+    fi
+
+    add_dns "$DNS"
+
+    SUCCESS=1
+    rm -f "$TMP_WG_CONF"
+    trap - EXIT HUP INT TERM
+
+    echo "connected: $IFACE"
+    echo "endpoint route preserved via $DEFAULT_GW"
+    if allowed_ip_present "::/0" "$ALLOWED_IPS" && ! printf '%s' "$ADDRESS" | grep -q ':'; then
+        echo "native IPv6 is blocked while the tunnel is up to avoid IPv6 leaks"
+    fi
+}
+
+down() {
+    ALLOWED_IPS=$(config_value Peer AllowedIPs "$CONFIG")
+    ENDPOINT=$(config_value Peer Endpoint "$CONFIG")
+    ENDPOINT_HOST=$(endpoint_host "$ENDPOINT")
+
+    delete_dns
+    delete_full_tunnel_routes
+    [ -n "$ENDPOINT_HOST" ] && delete_endpoint_route "$ENDPOINT_HOST"
+    ifconfig "$IFACE" destroy >/dev/null 2>&1 || true
+
+    echo "disconnected: $IFACE"
+}
+
+[ "$(id -u)" -eq 0 ] || die "must be run as root"
+[ $# -eq 3 ] || usage
+
+ACTION=$1
+CONFIG=$2
+IFACE=$3
+DNS_KEY="${IFACE}.wireguard"
+ALLOWED_IPS=""
+ENDPOINT_HOST=""
+
+[ -f "$CONFIG" ] || die "missing config: $CONFIG"
+[ -x "$RESOLVCONF_BIN" ] || die "missing resolvconf: $RESOLVCONF_BIN"
+
+case "$ACTION" in
+    up) up ;;
+    down) down ;;
+    *) usage ;;
+esac

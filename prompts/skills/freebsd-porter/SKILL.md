@@ -1,6 +1,6 @@
 ---
 name: freebsd-porter
-description: Create, update, debug, and prepare FreeBSD ports using the local Porter's Handbook as the primary source of truth. Use when asked to make a new port, upgrade an existing port, fix a broken port, run poudriere, validate FLAVORS or DEFAULT_VERSIONS behavior, or prepare a patch for the FreeBSD ports tree. Prefer poudriere for real validation and use the handbook sections under /usr/local/share/doc/freebsd/en/books/porters-handbook/. Triggers on: freebsd porter, freebsd port, ports tree, poudriere, make makesum, portlint, flavorized port, py_flavor, php_flavor, upgrading a port.
+description: "Create, update, debug, and prepare FreeBSD ports using the local Porter's Handbook as the primary source of truth. Use when asked to make a new port, upgrade an existing port, fix a broken port, run poudriere, validate FLAVORS or DEFAULT_VERSIONS behavior, or prepare a patch for the FreeBSD ports tree. Prefer poudriere for real validation and use the handbook sections under /usr/local/share/doc/freebsd/en/books/porters-handbook/. Triggers on: freebsd porter, freebsd port, ports tree, poudriere, make makesum, portlint, flavorized port, py_flavor, php_flavor, upgrading a port."
 ---
 
 # FreeBSD Porter

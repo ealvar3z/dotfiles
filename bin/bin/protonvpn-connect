@@ -1,0 +1,46 @@
+#!/bin/sh
+
+set -eu
+
+CONFIG="${PROTONVPN_CONFIG:-$HOME/.config/protonvpn-openvpn/protonvpn.ovpn}"
+OPENVPN_BIN="${OPENVPN_BIN:-/usr/local/sbin/openvpn}"
+AUTH_FILE=""
+
+if [ "${1-}" = "--auth-user-pass" ]; then
+    [ $# -ge 2 ] || {
+        echo "--auth-user-pass requires a file path" >&2
+        exit 1
+    }
+    AUTH_FILE="$2"
+fi
+
+if [ ! -f "$CONFIG" ]; then
+    echo "missing config: $CONFIG" >&2
+    exit 1
+fi
+
+if [ ! -x "$OPENVPN_BIN" ]; then
+    echo "missing OpenVPN binary: $OPENVPN_BIN" >&2
+    exit 1
+fi
+
+if [ -n "$AUTH_FILE" ] && [ -f "$AUTH_FILE" ]; then
+    first_line="$(sed -n '1p' "$AUTH_FILE")"
+    second_line="$(sed -n '2p' "$AUTH_FILE")"
+    if [ "$first_line" = "YOUR_OPENVPN_USERNAME" ] || [ "$second_line" = "YOUR_OPENVPN_PASSWORD" ]; then
+        echo "auth file still contains placeholder values: $AUTH_FILE" >&2
+        echo "replace them with Proton Account -> OpenVPN username credentials" >&2
+        exit 1
+    fi
+fi
+
+if [ -x /usr/local/bin/doas ]; then
+    exec /usr/local/bin/doas "$OPENVPN_BIN" --config "$CONFIG" "$@"
+fi
+
+if command -v sudo >/dev/null 2>&1; then
+    exec sudo "$OPENVPN_BIN" --config "$CONFIG" "$@"
+fi
+
+echo "need doas or sudo to start OpenVPN" >&2
+exit 1

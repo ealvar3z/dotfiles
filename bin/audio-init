@@ -5,6 +5,17 @@ set -u
 pactl_cmd=$(command -v pactl 2>/dev/null || true)
 mixer_cmd=$(command -v mixer 2>/dev/null || true)
 
+find_logitech_unit() {
+	awk '
+		/^pcm[0-9]+: <Logitech USB Headset Logitech USB Headset>/ {
+			gsub(/^pcm/, "", $1)
+			gsub(/:$/, "", $1)
+			print $1
+			exit
+		}
+	' /dev/sndstat 2>/dev/null
+}
+
 wait_for_pulse() {
 	local i
 
@@ -18,14 +29,48 @@ wait_for_pulse() {
 	return 1
 }
 
+have_pulse_source() {
+	local source=$1
+
+	[[ -n $pactl_cmd ]] || return 1
+	"$pactl_cmd" list short sources 2>/dev/null | awk '{ print $2 }' | grep -Fxq "$source"
+}
+
 set_default_source() {
+	have_pulse_source oss_input.dsp0 || return 0
 	"$pactl_cmd" set-default-source oss_input.dsp0 >/dev/null 2>&1 || true
 }
 
+mute_logitech_source() {
+	local unit
+	local source
+
+	unit=$(find_logitech_unit)
+	[[ -n $unit ]] || return 0
+
+	source="oss_input.dsp${unit}"
+	have_pulse_source "$source" || return 0
+	"$pactl_cmd" set-source-mute "$source" 1 >/dev/null 2>&1 || true
+}
+
+set_source_volume() {
+	local source=$1
+	local volume=$2
+
+	have_pulse_source "$source" || return 0
+	"$pactl_cmd" set-source-volume "$source" "$volume" >/dev/null 2>&1 || true
+}
+
 set_source_volumes() {
-	"$pactl_cmd" set-source-volume oss_input.dsp0 35% >/dev/null 2>&1 || true
-	"$pactl_cmd" set-source-volume oss_input.dsp3 30% >/dev/null 2>&1 || true
-	"$pactl_cmd" set-source-volume oss_input.dsp4 25% >/dev/null 2>&1 || true
+	local logitech_unit
+
+	set_source_volume oss_input.dsp0 35%
+	set_source_volume oss_input.dsp1 35%
+
+	logitech_unit=$(find_logitech_unit)
+	[[ -n $logitech_unit ]] || return 0
+
+	set_source_volume "oss_input.dsp${logitech_unit}" 0%
 }
 
 fix_internal_mixer() {
@@ -37,19 +82,13 @@ fix_internal_mixer() {
 	"$mixer_cmd" -f /dev/mixer0 igain=0 ogain=1.0:1.0 >/dev/null 2>&1 || true
 }
 
-fix_logitech_mixer() {
-	[[ -n $mixer_cmd ]] || return 0
-
-	"$mixer_cmd" -f /dev/mixer4 mic=0.25:0.25 >/dev/null 2>&1 || true
-}
-
 main() {
 	fix_internal_mixer
-	fix_logitech_mixer
 
 	wait_for_pulse || return 0
 
 	set_default_source
+	mute_logitech_source
 	set_source_volumes
 }
 
