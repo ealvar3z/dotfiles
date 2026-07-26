@@ -1,184 +1,244 @@
-vim9script
-
-# =========================
-# Core UI + behavior
-# =========================
-set nocompatible exrc secure
-filetype plugin indent on
-syntax off
-
-if !filereadable(expand('~/.vim/autoload/plug.vim'))
-  silent! call mkdir(expand('~/.vim/autoload'), 'p')
-  var curl = exepath('curl')
-  if !empty(curl)
-    silent execute '!' .. shellescape(curl) .. ' -fLo ' .. shellescape(expand('~/.vim/autoload/plug.vim')) .. ' --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
-    autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
-  endif
-endif
-
-call plug#begin()
-	Plug 'tpope/vim-commentary'
-	Plug 'ctrlpvim/ctrlp.vim'
-	Plug 'dense-analysis/ale'
-	# Plug 'ealvar3z/ed.vim'
-call plug#end()
-
-if executable('rg')
-	set grepprg=rg\ --vimgrep\ --smart-case
-	set grepformat=%f:%l:%c:%m
-endif
-
-set ruler
-set wildmenu
+set nocompatible
+set backspace=indent,eol,start
 set hidden
-set updatetime=200
-
-# Keep view centered (avoid needing zz, including in insert)
-set scrolloff=999
-set sidescrolloff=8
-
-# tmux/terminal friendliness
-set ttimeout
-set ttimeoutlen=10
-if exists('+termguicolors')
-  set termguicolors
-endif
-
-# colorscheme ed
-
-# =========================
-# Search / replace UX
-# =========================
-set magic
+set history=1000
+set viminfo='100,<50,s10,h
+set ruler
+set showcmd
+set wildmenu
+set wildmode=longest:full,full
+set nowrap
+set linebreak
+set tabstop=4
+set shiftwidth=4
+set softtabstop=4
+set noexpandtab
+set autoindent
+set smartindent
 set ignorecase
 set smartcase
 set incsearch
 set hlsearch
-if exists('+inccommand')
-  set inccommand=split
-endif
+set nomodeline
+set scrolloff=3
+set splitbelow
+set splitright
+set ttyfast
+set lazyredraw
+set background=dark
+set laststatus=0
+set noshowmode
+set visualbell
+set noerrorbells
+set noundofile
+set nowritebackup
+set nobackup
+set noswapfile
 
-&t_SI = "\<Esc>[6 q"
-&t_EI = "\<Esc>[2 q"
+syntax on
+filetype plugin indent on
 
-
-# =========================
-# Leader + mappings
-# =========================
-g:mapleader = "\<Space>"
-
-# clear highlight
-nnoremap <leader>h :nohlsearch<CR>
-
-# jk to escape
+let mapleader=" "
 inoremap jk <Esc>
-
-# ; -> : (sacrifices "repeat f/F/t/T")
 nnoremap ; :
 vnoremap ; :
-onoremap ; :
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>x :x<CR>
+nnoremap <leader>h :nohlsearch<CR>
+nnoremap Y y$
 
-# Completion navigation on Tab / Shift-Tab (when popup menu is visible)
-inoremap <expr> <Tab>   pumvisible() ? "\<C-n>" : "\<Tab>"
-inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<BS>"
+function! s:QuickfixMove(command) abort
+  try
+    execute a:command
+  catch /^Vim\%((\a\+)\)\=:E/
+    echohl WarningMsg
+    echomsg substitute(v:exception, '^Vim\%((\a\+)\)\=:', '', '')
+    echohl None
+  endtry
+endfunction
 
-# =========================
-# C / NetBSD KNF-ish settings (internal Vim indent)
-# =========================
-def SetKNFC(): void
-  setlocal noexpandtab
-  setlocal tabstop=8
-  setlocal shiftwidth=4
-  setlocal softtabstop=4
+nnoremap <leader>n :call <SID>QuickfixMove('cnext')<CR>
+nnoremap <leader>p :call <SID>QuickfixMove('cprevious')<CR>
 
-  setlocal cindent
-  setlocal cinoptions=:0,l1,t0,(0,W4,g0,N-s
+if has("mouse")
+  set mouse=a
+endif
 
-  setlocal textwidth=80
-  setlocal colorcolumn=+1
+if executable("rg")
+  set grepprg=rg\ --vimgrep\ --smart-case
+  set grepformat=%f:%l:%c:%m
+endif
 
-  # Prefer internal reindent via '=' (no external equalprg)
-  setlocal equalprg=
-enddef
+let s:perl_compile = {}
 
-# Build: prefer make if a Makefile exists, else compile current file
-def SetCMakeprg(): void
-  if filereadable('Makefile') || filereadable('makefile') || filereadable('GNUmakefile')
-    setlocal makeprg=make
-  else
-    setlocal makeprg=cc\ -std=c23\ -Wall\ -Wextra\ -Wpedantic\ -O0\ -g\ %
+function! s:PerlCompileRefresh(state, status) abort
+  call setqflist([], 'r', {
+        \ 'id': a:state.qfid,
+        \ 'title': a:state.title,
+        \ 'lines': a:state.lines,
+        \ 'efm': a:state.efm,
+        \ })
+  let l:items = getqflist({'id': a:state.qfid, 'items': 1}).items
+  call insert(l:items, {'text': a:status, 'valid': 0})
+  call setqflist([], 'r', {
+        \ 'id': a:state.qfid,
+        \ 'title': a:state.title,
+        \ 'items': l:items,
+        \ })
+endfunction
+
+function! s:PerlCompileOutput(state, channel, message) abort
+  if !empty(a:message)
+    call add(a:state.lines, a:message)
+    call s:PerlCompileRefresh(a:state, 'Perl compile running...')
   endif
-enddef
+endfunction
 
-augroup c_netbsd
+function! s:PerlCompileFinish(state) abort
+  if !get(a:state, 'closed', 0) || !has_key(a:state, 'exit_status')
+    return
+  endif
+
+  if get(a:state, 'cancelled', 0)
+    call s:PerlCompileRefresh(a:state, 'Perl compile cancelled')
+    return
+  endif
+
+  call setqflist([], 'r', {
+        \ 'id': a:state.qfid,
+        \ 'title': a:state.title,
+        \ 'lines': a:state.lines,
+        \ 'efm': a:state.efm,
+        \ })
+  let l:items = getqflist({'id': a:state.qfid, 'items': 1}).items
+  let l:valid = filter(copy(l:items), 'get(v:val, "valid", 0)')
+  if a:state.exit_status == 0
+    let l:status = empty(l:valid)
+          \ ? 'Perl syntax check finished successfully'
+          \ : 'Perl syntax check finished with warnings'
+  else
+    let l:status = printf('Perl compile finished with status %d', a:state.exit_status)
+  endif
+  call insert(l:items, {'text': l:status, 'valid': 0})
+  call setqflist([], 'r', {
+        \ 'id': a:state.qfid,
+        \ 'title': a:state.title,
+        \ 'items': l:items,
+        \ })
+  echomsg l:status
+endfunction
+
+function! s:PerlCompileClosed(state, channel) abort
+  let a:state.closed = 1
+  call s:PerlCompileFinish(a:state)
+endfunction
+
+function! s:PerlCompileExited(state, job, status) abort
+  let a:state.exit_status = a:status
+  call s:PerlCompileFinish(a:state)
+endfunction
+
+function! s:PerlCompile() abort
+  let l:path = expand('%:p')
+  if empty(l:path)
+    echohl ErrorMsg
+    echomsg 'PerlCompile: the current buffer has no file name'
+    echohl None
+    return
+  endif
+
+  try
+    silent update
+  catch
+    echohl ErrorMsg
+    echomsg 'PerlCompile: could not save the current buffer'
+    echohl None
+    return
+  endtry
+
+  if has_key(s:perl_compile, 'job')
+        \ && job_status(s:perl_compile.job) ==# 'run'
+    let s:perl_compile.cancelled = 1
+    call job_stop(s:perl_compile.job)
+  endif
+
+  let l:title = 'perl -Wc ' . l:path
+  call setqflist([], ' ', {
+        \ 'title': l:title,
+        \ 'items': [{'text': 'Perl compile starting...', 'valid': 0}],
+        \ })
+  let l:qfid = getqflist({'id': 0}).id
+  let l:state = {
+        \ 'lines': [],
+        \ 'qfid': l:qfid,
+        \ 'title': l:title,
+        \ 'efm': &l:errorformat,
+        \ }
+  let s:perl_compile = l:state
+
+  let l:winid = win_getid()
+  botright copen 10
+  call win_gotoid(l:winid)
+
+  let l:state.job = job_start(['perl', '-Wc', l:path], {
+        \ 'out_mode': 'nl',
+        \ 'err_mode': 'nl',
+        \ 'out_cb': function('<SID>PerlCompileOutput', [l:state]),
+        \ 'err_cb': function('<SID>PerlCompileOutput', [l:state]),
+        \ 'close_cb': function('<SID>PerlCompileClosed', [l:state]),
+        \ 'exit_cb': function('<SID>PerlCompileExited', [l:state]),
+        \ })
+  if job_status(l:state.job) ==# 'fail'
+    let l:state.closed = 1
+    let l:state.exit_status = -1
+    call s:PerlCompileFinish(l:state)
+  endif
+endfunction
+
+function! s:PerlDoc(topic) abort
+  if empty(a:topic)
+    echohl WarningMsg
+    echomsg 'Perldoc: no symbol under the cursor'
+    echohl None
+    return
+  endif
+
+  let l:output = systemlist('perldoc -f ' . shellescape(a:topic) . ' 2>&1')
+  if v:shell_error
+    let l:output = systemlist('perldoc ' . shellescape(a:topic) . ' 2>&1')
+  endif
+  if v:shell_error
+    echohl WarningMsg
+    echomsg 'Perldoc: no documentation found for ' . a:topic
+    echohl None
+    return
+  endif
+
+  let l:docbuf = bufnr('__Perldoc__')
+  if l:docbuf == -1
+    botright new
+    silent file __Perldoc__
+  elseif bufwinid(l:docbuf) != -1
+    call win_gotoid(bufwinid(l:docbuf))
+  else
+    execute 'botright sbuffer ' . l:docbuf
+  endif
+  setlocal buftype=nofile bufhidden=wipe noswapfile
+  setlocal modifiable
+  silent %delete _
+  call setline(1, l:output)
+  setlocal nomodifiable
+  setlocal nowrap
+  normal! gg
+  nnoremap <silent><buffer> q :close<CR>
+endfunction
+
+augroup perl_support
   autocmd!
-  autocmd FileType c,cpp SetKNFC()
-  autocmd FileType c,cpp SetCMakeprg()
+  autocmd FileType perl compiler perl
+  autocmd FileType perl setlocal makeprg=perl\ -Wc\ %:S
+  autocmd FileType perl command! -buffer PerlCompile call <SID>PerlCompile()
+  autocmd FileType perl nnoremap <silent><buffer> <leader>m :PerlCompile<CR>
+  autocmd FileType perl nnoremap <silent><buffer> K :call <SID>PerlDoc(expand('<cword>'))<CR>
 augroup END
-
-# =========================
-# Go / Python settings
-# =========================
-def SetGo(): void
-  setlocal noexpandtab
-  setlocal tabstop=8
-  setlocal shiftwidth=8
-  setlocal softtabstop=8
-  setlocal textwidth=0
-enddef
-
-def SetGoMakeprg(): void
-  setlocal makeprg=go\ test\ ./...
-enddef
-
-def SetPython(): void
-  setlocal expandtab
-  setlocal tabstop=4
-  setlocal shiftwidth=4
-  setlocal softtabstop=4
-  setlocal textwidth=88
-  setlocal colorcolumn=+1
-enddef
-
-def SetPythonMakeprg(): void
-  setlocal makeprg=python3\ %
-enddef
-
-augroup go_python
-  autocmd!
-  autocmd FileType go SetGo()
-  autocmd FileType go SetGoMakeprg()
-  autocmd FileType python SetPython()
-  autocmd FileType python SetPythonMakeprg()
-augroup END
-
-# =========================
-# Quickfix workflow
-# =========================
-nnoremap <leader>q :copen<CR>
-nnoremap <leader>Q :cclose<CR>
-nnoremap <Leader>e :ALEPopulateQuickfix<CR>:sleep 100m<CR>:copen<CR>
-nnoremap <Leader>w :silent! grep! <cword> \| cwindow \| redraw!<CR>
-nnoremap ,n :cnext<CR>
-nnoremap ,p :cprev<CR>
-nnoremap ,0 :cfirst<CR>
-nnoremap ,$ :clast<CR>
-
-nnoremap <C-b> :CtrlpBuffer<CR>
-nnoremap <C-k> :ALEHover<CR>
-nnoremap <C-j> :ALEDetail<CR>
-
-nmap <silent> gr :ALEFindReferences -quickfix<CR>:sleep 100m<CR>:copen<CR>
-nmap <silent> gd :ALEGoToDefinition<CR>
-nmap <silent> re :ALERename<CR>
-
-g:ctrlp_use_caching = 0
-g:ctrlp_working_path_mode = 'ra'
-g:ale_hover_to_floating_preview = 1
-g:ale_detail_to_floating_preview = 1
-g:ale_floating_window_border = 0
-g:ale_virtualtext_cursor = 0
-g:ale_set_quickf = 1
-
-# build + open quickfix
-nnoremap <leader>m :silent make \| copen<CR>
