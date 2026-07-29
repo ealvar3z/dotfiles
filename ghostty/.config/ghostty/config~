@@ -1,5 +1,0 @@
-command=/usr/bin/tmux
-font-family=Monaco
-background-opacity=0.8
-gtk-titlebar=false
-theme=iTerm2 Default
