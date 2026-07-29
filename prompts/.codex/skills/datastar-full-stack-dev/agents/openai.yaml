@@ -1,0 +1,4 @@
+interface:
+  display_name: "Datastar Full-Stack Development"
+  short_description: "Build backend-driven Datastar apps"
+  default_prompt: "Use $datastar-full-stack-dev to design and implement a backend-driven Datastar application."

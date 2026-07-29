@@ -1,9 +1,9 @@
 # /create-skill
 
-**Description:** Create a new skill by inferring its purpose from the skill name. The skill will be saved to ~/Notes/Prompts/skills/<skill-name>/SKILL.md with proper YAML frontmatter.
+**Description:** Create a canonical Codex skill in the Stow-managed dotfiles source tree.
 
 **Parameters:**
-- skill_name: The name of the new skill to create (e.g., "go-best-practices", "docker-compose", "rust-conventions")
+- `skill_name`: lowercase letters, digits, and hyphens only
 
 **Example usage:**
 - `/create-skill docker-compose`
@@ -13,25 +13,29 @@
 
 ## Prompt
 
-I'll create a new skill called `{{skill_name}}`. Here's my process:
+Use the `skill-creator` skill to create `{{skill_name}}`.
 
-1. **Analyze the skill name** "{{skill_name}}" to infer its purpose:
-   - Break down the name into meaningful parts
-   - Determine the likely intent and use case
-   - The name must be lowercase alphanumeric with hyphens only
+1. Treat `~/dotfiles/prompts/.codex/skills` as the source directory. Do not
+   create the skill directly under `~/.codex/skills`.
+2. Read the complete `skill-creator` instructions and clarify only decisions
+   that materially change the skill.
+3. Initialize the skill with the official `init_skill.py`, including only the
+   resource directories it needs.
+4. Write canonical `SKILL.md` frontmatter containing `name` and `description`.
+   Put all trigger conditions in the description.
+5. Generate `agents/openai.yaml` with quoted `display_name`,
+   `short_description`, and a `default_prompt` that explicitly mentions
+   `$skill-name`.
+6. Remove every initializer placeholder and avoid auxiliary README, changelog,
+   or installation files inside the skill.
+7. Run the official `quick_validate.py` validator, using PyYAML through `uv`
+   when needed.
+8. Confirm that Codex has initialized `~/.codex/skills`, then run:
 
-2. **Generate the skill structure**:
-   - Create YAML frontmatter with `name` and `description`
-   - Write a "When to Use" section
-   - Write detailed instructions for the skill
+   ```sh
+   cd ~/dotfiles
+   stow -t ~ prompts
+   ```
 
-3. **Show you a preview** of the generated SKILL.md and ask if you want to:
-   - Use it as-is
-   - Modify the description
-   - Refine the instructions
-
-4. **Save the skill** to `~/Notes/Prompts/skills/{{skill_name}}/SKILL.md`
-
-5. **Confirm** the skill is ready to use as `/{{skill_name}}`
-
-Let me start by analyzing the skill name and generating the initial version...
+9. Verify that `~/.codex/skills/{{skill_name}}` resolves to the dotfiles source
+   and report the files created.

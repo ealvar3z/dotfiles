@@ -23,9 +23,30 @@ sudo tar -xzf helix.tar.gz -C /opt/helix --strip-components=1 || exit 1
 sudo ln -sf /opt/helix/hx /usr/local/bin/hx
 ```
 
+## Codex skills
+
+Personal Codex skills live under
+`prompts/.codex/skills/<skill-name>/` using the canonical Codex skill layout.
+The dotfiles repository is the source of truth; `~/.codex/skills` is the
+installed Stow view.
+
+Launch Codex once on a fresh machine before stowing so it creates the real
+`~/.codex/skills` directory and its managed `.system` skills. This prevents GNU
+Stow from folding the whole directory into the dotfiles repository.
+
+Then install the prompts package:
+
+```console
+cd ~/dotfiles
+stow -t ~ prompts
+```
+
+Codex continues to own `~/.codex/skills/.system`. Stow links each personal skill
+beside it and also installs the package's `commands/` and `sharable.md` at the
+home-directory root.
+
 ## License
 
 Redistributed under the terms specified in the [`LICENSE`] file.
 
 [`LICENSE`]: /LICENSE
-

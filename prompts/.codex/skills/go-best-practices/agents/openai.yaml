@@ -1,0 +1,4 @@
+interface:
+  display_name: "Go Best Practices"
+  short_description: "Apply Go project and coding conventions"
+  default_prompt: "Use $go-best-practices to make this Go change while following the repository conventions."

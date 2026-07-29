@@ -1,0 +1,4 @@
+interface:
+  display_name: "SOLID Principles"
+  short_description: "Review object design for SOLID violations"
+  default_prompt: "Use $solid-principles to review this object design for SOLID violations."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Taskwarrior Task Management"
+  short_description: "Manage tasks scoped to the current project"
+  default_prompt: "Use $taskwarrior-task-management to manage the tasks for the current git project."

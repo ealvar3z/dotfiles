@@ -1,0 +1,4 @@
+interface:
+  display_name: "Update Blog Post"
+  short_description: "Edit, publish, and sync existing blog posts"
+  default_prompt: "Use $update-blog-post to update and publish this existing ptb blog post."

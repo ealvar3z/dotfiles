@@ -1,0 +1,4 @@
+interface:
+  display_name: "FreeBSD Porter"
+  short_description: "Create and maintain validated FreeBSD ports"
+  default_prompt: "Use $freebsd-porter to create or update this FreeBSD port and validate it against the local handbook."

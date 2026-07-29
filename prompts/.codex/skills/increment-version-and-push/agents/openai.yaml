@@ -1,0 +1,4 @@
+interface:
+  display_name: "Increment Version and Push"
+  short_description: "Version, tag, commit, and push a release"
+  default_prompt: "Use $increment-version-and-push to prepare and publish the next project version."

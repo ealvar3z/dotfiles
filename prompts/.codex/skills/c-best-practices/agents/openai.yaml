@@ -1,0 +1,4 @@
+interface:
+  display_name: "C Best Practices"
+  short_description: "Review C for correctness and portability"
+  default_prompt: "Use $c-best-practices to review this C code for correctness, maintainability, and portability."

@@ -1,0 +1,4 @@
+interface:
+  display_name: "Compose Blog Post"
+  short_description: "Draft plaintext posts for the ptb blog"
+  default_prompt: "Use $compose-blog-post to draft a new plaintext post in the established ptb style."

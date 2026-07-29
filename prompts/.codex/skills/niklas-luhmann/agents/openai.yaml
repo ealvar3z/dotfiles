@@ -1,0 +1,4 @@
+interface:
+  display_name: "Niklas Luhmann Notes"
+  short_description: "Create and link local zettelkasten notes"
+  default_prompt: "Use $niklas-luhmann to capture this as a linked note in my local zettelkasten."

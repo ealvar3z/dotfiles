@@ -1,0 +1,4 @@
+interface:
+  display_name: "Purge File from Git"
+  short_description: "Remove a file completely from Git history"
+  default_prompt: "Use $purge-file-from-git to safely remove this file from the entire repository history."

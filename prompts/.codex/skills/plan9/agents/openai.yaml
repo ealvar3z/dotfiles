@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan 9 and 9front"
+  short_description: "Configure and troubleshoot Plan 9 and 9front"
+  default_prompt: "Use $plan9 to configure or troubleshoot this Plan 9 or 9front environment."

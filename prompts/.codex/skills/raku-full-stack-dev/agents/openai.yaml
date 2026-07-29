@@ -1,0 +1,4 @@
+interface:
+  display_name: "Raku Full-Stack Development"
+  short_description: "Build data-first full-stack apps with Raku++"
+  default_prompt: "Use $raku-full-stack-dev to design and implement a data-first full-stack application for Raku++."

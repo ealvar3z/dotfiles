@@ -1,0 +1,4 @@
+interface:
+  display_name: "Beyond SOLID Principles"
+  short_description: "Review system-level architecture principles"
+  default_prompt: "Use $beyond-solid-principles to review this system architecture for principle violations."

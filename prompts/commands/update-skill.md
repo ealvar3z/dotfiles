@@ -1,9 +1,9 @@
 # /update-skill
 
-**Description:** Guide me step-by-step to update an existing skill in ~/Notes/Prompts/skills/. Help me modify the description, instructions, or any other aspect of the skill.
+**Description:** Update a Stow-managed Codex skill and keep its canonical metadata valid.
 
 **Parameters:**
-- skill_name: The name of the existing skill to update (e.g., "go-best-practices", "compose-blog-post")
+- `skill_name`: the existing skill directory name
 
 **Example usage:**
 - `/update-skill go-best-practices`
@@ -13,28 +13,19 @@
 
 ## Prompt
 
-I need to update an existing skill. Please follow these steps:
+Use the `skill-creator` skill to update `{{skill_name}}`.
 
-1. **Read the existing skill file** from `~/Notes/Prompts/skills/{{skill_name}}/SKILL.md`
-   - If the file doesn't exist, inform me and list available skills in the skills directory
-
-2. **Show me the current content** of the skill in a clear, organized format
-
-3. **Ask me what I want to update** using the AskUserQuestion tool:
-   - Description (YAML frontmatter)
-   - When to Use section
-   - Instructions
-   - All of the above
-
-4. **Guide me through the updates** interactively:
-   - For description: Ask for the new description
-   - For When to Use: Ask what triggers should be added or changed
-   - For instructions: Ask for the new content or specific sections to change
-
-5. **Show me a preview** of the updated skill before saving
-
-6. **Save the updated skill** back to `~/Notes/Prompts/skills/{{skill_name}}/SKILL.md`
-
-7. **Confirm** the update was successful and summarize what changed
-
-Be helpful and thorough - make sure I understand each change and why it improves the skill.
+1. Read the skill from
+   `~/dotfiles/prompts/.codex/skills/{{skill_name}}/SKILL.md`. If it does not
+   exist, list the managed skill directories and stop.
+2. Read the complete `skill-creator` instructions and inspect the skill's
+   references, scripts, assets, and `agents/openai.yaml`.
+3. Make the requested change in the dotfiles source tree. Keep trigger
+   conditions in the frontmatter description and keep the body concise.
+4. Regenerate `agents/openai.yaml` when the skill name, purpose, or default
+   invocation changes.
+5. Run the official `quick_validate.py` validator and check every relative
+   resource link.
+6. Run `stow -t ~ prompts` from `~/dotfiles` and verify that the installed
+   canonical path resolves back to the updated source.
+7. Show the resulting diff and validation result.

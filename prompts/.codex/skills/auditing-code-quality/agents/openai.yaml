@@ -1,0 +1,4 @@
+interface:
+  display_name: "Code Quality Audit"
+  short_description: "Audit architecture, SOLID, and Go code quality"
+  default_prompt: "Use $auditing-code-quality to perform a full quality and architecture audit of this codebase."

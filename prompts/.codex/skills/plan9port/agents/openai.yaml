@@ -1,0 +1,4 @@
+interface:
+  display_name: "Plan 9 from User Space"
+  short_description: "Tune and troubleshoot plan9port on macOS"
+  default_prompt: "Use $plan9port to audit my macOS plan9port environment and suggest fixes from the local manuals."

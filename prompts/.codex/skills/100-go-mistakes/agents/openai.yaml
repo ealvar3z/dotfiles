@@ -1,0 +1,4 @@
+interface:
+  display_name: "100 Go Mistakes"
+  short_description: "Audit Go code for 100 common mistakes"
+  default_prompt: "Use $100-go-mistakes to audit this Go code for common mistakes and explain the findings."
