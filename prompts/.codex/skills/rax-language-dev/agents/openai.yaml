@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rax Language Development"
+  short_description: "Build Rax as a pure Raku++ deployment language"
+  default_prompt: "Use $rax-language-dev with $raku-full-stack-dev to design or implement the current Rax milestone without expanding scope."
